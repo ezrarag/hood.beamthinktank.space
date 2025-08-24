@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Search, MapPin, Plus, Users } from 'lucide-react'
+import { MapPin, Search, Plus, Users, Target } from 'lucide-react'
 
 interface LocationSignupProps {
   onNodeFound: (node: any) => void
@@ -10,191 +10,125 @@ interface LocationSignupProps {
 }
 
 export default function LocationSignup({ onNodeFound, onShowSignup }: LocationSignupProps) {
-  const [address, setAddress] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [isSearching, setIsSearching] = useState(false)
-  const [searchResults, setSearchResults] = useState<any[]>([])
-  const [showCreateForm, setShowCreateForm] = useState(false)
 
-  // Mock data for demo purposes
-  const mockNodes = [
-    {
-      id: 1,
-      name: 'Downtown Orlando Arts District',
-      address: '123 E Central Blvd, Orlando, FL 32801',
-      members: 47,
-      donationGoal: 5000,
-      currentAmount: 3200,
-      perks: [
-        'Free concert tickets',
-        'Access to recorded performances',
-        'Priority access to community music workshops'
-      ],
-      coordinates: [28.5383, -81.3792]
-    },
-    {
-      id: 2,
-      name: 'Mills 50 Creative Hub',
-      address: '456 N Mills Ave, Orlando, FL 32803',
-      members: 23,
-      donationGoal: 3000,
-      currentAmount: 1800,
-      perks: [
-        'Art gallery access',
-        'Creative workshop discounts',
-        'Local artist meetups'
-      ],
-      coordinates: [28.5600, -81.3600]
-    }
-  ]
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
 
-  const handleSearch = async () => {
-    if (!address.trim()) return
-    
     setIsSearching(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Filter nodes by proximity (mock logic)
-    const results = mockNodes.filter(node => 
-      node.address.toLowerCase().includes(address.toLowerCase()) ||
-      node.name.toLowerCase().includes(address.toLowerCase())
-    )
-    
-    setSearchResults(results)
-    setIsSearching(false)
-  }
-
-  const handleJoinNode = (node: any) => {
-    onNodeFound(node)
-    onShowSignup()
-  }
-
-  const handleCreateNode = () => {
-    setShowCreateForm(true)
+    // Simulate search delay
+    setTimeout(() => {
+      // Mock search result - in real app this would query your database
+      const mockResult = {
+        id: 4,
+        name: 'New Neighborhood Hub',
+        address: searchQuery,
+        members: 12,
+        donationGoal: 2500,
+        currentAmount: 800,
+        perks: [
+          'Community meetups',
+          'Local business networking',
+          'Skill sharing sessions'
+        ],
+        coordinates: [28.5383, -81.3792],
+        unlockedTiers: ['Classes'],
+        nextTier: 'Cleaning',
+        nextTierAmount: 1000,
+        progress: 32
+      }
+      
+      onNodeFound(mockResult)
+      setIsSearching(false)
+    }, 1500)
   }
 
   return (
-    <div className="card">
-      <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-        <MapPin className="w-5 h-5 text-hood-500 mr-2" />
-        Find Your Neighborhood Node
-      </h3>
-      
-      {/* Search Input */}
-      <div className="flex space-x-2 mb-6">
-        <input
-          type="text"
-          placeholder="Enter address or zip code..."
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          className="input-field flex-1"
-          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-        />
-        <button
-          onClick={handleSearch}
-          disabled={isSearching || !address.trim()}
-          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSearching ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Search className="w-5 h-5" />
-          )}
-        </button>
-      </div>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
+    >
+      <div className="p-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+          <MapPin className="w-5 h-5 text-hood-500 mr-2" />
+          Find Your Hood
+        </h3>
+        
+        <p className="text-gray-600 mb-6 leading-relaxed">
+          Search for existing Hoods in your area or create a new one to start building community services together.
+        </p>
 
-      {/* Search Results */}
-      {searchResults.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="space-y-3 mb-6"
-        >
-          <h4 className="font-medium text-gray-700">Found {searchResults.length} node(s):</h4>
-          {searchResults.map((node) => (
-            <div key={node.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h5 className="font-semibold text-gray-900">{node.name}</h5>
-                  <p className="text-sm text-gray-600">{node.address}</p>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Users className="w-4 h-4 mr-1" />
-                    {node.members} members
-                  </div>
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleJoinNode(node)}
-                  className="btn-primary text-sm py-1 px-3"
-                >
-                  Join Node
-                </button>
-                <button
-                  onClick={() => onNodeFound(node)}
-                  className="btn-secondary text-sm py-1 px-3"
-                >
-                  View Details
-                </button>
-              </div>
+        {/* Search Form */}
+        <form onSubmit={handleSearch} className="mb-6">
+          <div className="flex space-x-3">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Enter your address or neighborhood..."
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hood-500 focus:border-transparent transition-colors"
+                disabled={isSearching}
+              />
             </div>
-          ))}
-        </motion.div>
-      )}
+            <button
+              type="submit"
+              disabled={!searchQuery.trim() || isSearching}
+              className="bg-hood-600 text-white px-6 py-3 rounded-lg hover:bg-hood-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+            >
+              {isSearching ? 'Searching...' : 'Search'}
+            </button>
+          </div>
+        </form>
 
-      {/* Create New Node */}
-      <div className="border-t border-gray-200 pt-6">
-        <div className="text-center">
-          <p className="text-gray-600 mb-3">Don't see a node in your area?</p>
-          <button
-            onClick={handleCreateNode}
-            className="btn-secondary inline-flex items-center"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create New Node
-          </button>
-        </div>
-      </div>
-
-      {/* Create Node Form */}
-      {showCreateForm && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          className="mt-6 p-4 bg-hood-50 rounded-lg border border-hood-200"
-        >
-          <h4 className="font-medium text-gray-900 mb-3">Create New Community Node</h4>
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="Node name..."
-              className="input-field"
-            />
-            <input
-              type="text"
-              placeholder="Address..."
-              className="input-field"
-            />
-            <input
-              type="number"
-              placeholder="Donation goal ($)"
-              className="input-field"
-            />
-            <div className="flex space-x-2">
-              <button className="btn-primary flex-1">Create Node</button>
-              <button 
-                onClick={() => setShowCreateForm(false)}
-                className="btn-secondary flex-1"
-              >
-                Cancel
-              </button>
+        {/* Quick Actions */}
+        <div className="space-y-4">
+          <div className="flex items-center p-4 bg-gradient-to-r from-hood-50 to-hood-100 rounded-xl border border-hood-200">
+            <div className="w-10 h-10 bg-hood-500 rounded-lg flex items-center justify-center mr-4">
+              <Users className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-medium text-gray-900 mb-1">Join Existing Hood</h4>
+              <p className="text-sm text-gray-600">Connect with neighbors and contribute to community goals</p>
             </div>
           </div>
-        </motion.div>
-      )}
-    </div>
+
+          <div className="flex items-center p-4 bg-gradient-to-r from-beam-50 to-beam-100 rounded-xl border border-beam-200">
+            <div className="w-10 h-10 bg-beam-500 rounded-lg flex items-center justify-center mr-4">
+              <Plus className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-medium text-gray-900 mb-1">Create New Hood</h4>
+              <p className="text-sm text-gray-600">Start a new community and set donation goals</p>
+            </div>
+            <button
+              onClick={onShowSignup}
+              className="bg-beam-600 text-white px-4 py-2 rounded-lg hover:bg-beam-700 transition-colors text-sm font-medium"
+            >
+              Get Started
+            </button>
+          </div>
+        </div>
+
+        {/* Info Box */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+          <div className="flex items-start">
+            <Target className="w-5 h-5 text-gray-500 mr-3 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-gray-900 mb-1">How Hoods Work</h4>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Hoods unlock community services as they reach donation milestones. Each tier provides 
+                access to different services like classes, cleaning, food assistance, and transportation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   )
 }

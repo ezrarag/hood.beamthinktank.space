@@ -1,165 +1,182 @@
-# Hood - Community Node Registration
+# 🌍 Hood Dashboard - Global Community Network
 
-A modern web application that combines location-based community building with donation-driven perks. Think Nextdoor meets Patreon — map-based neighborhood nodes with goal tracking and reward systems.
+A modern, transparent dashboard for tracking how BEAM neighborhoods ("Hoods") work together and how donations translate into community services.
 
-## 🎯 Purpose
+## ✨ What's New (Refactor v2.0)
 
-Let any community member create or join a "neighborhood node" linked to a donation/service pool. When donation milestones are reached, community perks automatically unlock.
+This refactor transforms the original "Community Node Registration" into a comprehensive **Global Hood Dashboard** with:
 
-## ✨ Features
+- **Clean, modern design** inspired by professional portfolio aesthetics
+- **Global overview** with donation totals and progress tracking
+- **Donation tier system** showing service unlocks at each milestone
+- **Enhanced map visualization** with Hood progress and service status
+- **Governance transparency** page explaining the decision-making process
+- **Framer Motion animations** for smooth, engaging user experience
 
-### Step 1: Location-based Sign-up
-- Enter address or zip code to find nearby community nodes
-- Auto-create new nodes if none exist in the area
-- Join existing nodes with active communities
+## 🚀 Core Features
 
-### Step 2: Interactive Map Interface
-- Visual representation of all community nodes
-- Click markers to view detailed information
-- Real-time location-based search
+### 1. Global Hood Overview
+- Map of all active Hoods (cities/neighborhoods)
+- Donation totals per Hood with progress visualization
+- Service unlock tiers and community benefits
+- Real-time statistics and metrics
 
-### Step 3: Node Management
-- **Donation Goal Progress Bar**: Visual tracking of community funding
-- **Available Perks**: List of unlocked and upcoming rewards
-- **History Tracking**: Past events, services, and activities
-- **Member Management**: Community size and engagement metrics
+### 2. Hood Detail Pages
+- Progress bars showing current vs. next unlock tier
+- List of unlocked services and upcoming classes
+- Service request history and fulfillment tracking
+- Member management and community engagement
 
-### Step 4: Milestone Trigger System
-- Automatic perk unlocking at donation thresholds (25%, 50%, 75%, 100%)
-- Real-time progress updates
-- Community celebration of achievements
+### 3. Donation Tiers & Allocation
+- **$500** → Classes (music workshops, art classes, skill sharing)
+- **$1,000** → Cleaning (park maintenance, street cleaning, gardens)
+- **$2,000** → Food (community meals, food banks, grocery assistance)
+- **$5,000** → Transportation (rideshare, bike sharing, transit passes)
 
-## 🎨 Design Philosophy
+### 4. NGO Service Mapping
+- Visual representation of NGO collaboration in each Hood
+- Service delivery tracking and status updates
+- Partnership management and performance metrics
 
-**Nextdoor + Patreon**: Combines the local community aspect of Nextdoor with the goal-oriented reward system of Patreon.
+### 5. Governance & Transparency
+- Community decision-making process explanation
+- Donation flow: contributions → allocation → services
+- Public blockchain tracking for complete transparency
 
-### Demo Perks for BEAM Band Orlando:
-- 🎵 Free concert tickets
-- 🎬 Access to recorded performances  
-- 🎓 Priority access to community music workshops
+## 🛠 Tech Stack
+
+- **Frontend**: Next.js 14 with TypeScript
+- **Styling**: TailwindCSS with custom color scheme
+- **Animations**: Framer Motion for smooth interactions
+- **Maps**: Leaflet with React integration
+- **Icons**: Lucide React icon library
+- **Database**: Supabase (ready for integration)
+
+## 🎨 Design System
+
+### Color Palette
+- **Hood Blues**: Community-focused primary colors
+- **Beam Purples**: Innovation and growth accents
+- **Success Greens**: Service unlocks and achievements
+- **Neutral Grays**: Clean, professional backgrounds
+
+### Components
+- **Cards**: Rounded corners with subtle shadows
+- **Buttons**: Gradient backgrounds with hover effects
+- **Progress Bars**: Animated with gradient fills
+- **Stats Grids**: Color-coded metric displays
+
+## 📁 Project Structure
+
+```
+hood.beamthinktank.space/
+├── app/
+│   ├── globals.css          # Global styles and Tailwind config
+│   ├── layout.tsx           # Root layout component
+│   ├── page.tsx             # Main dashboard page
+│   └── governance/          # Governance transparency page
+│       └── page.tsx
+├── components/
+│   ├── LocationSignup.tsx   # Hood search and creation
+│   ├── NodeCard.tsx         # Hood detail display
+│   └── NodeMap.tsx          # Interactive map component
+├── tailwind.config.js       # Custom color scheme
+└── package.json             # Dependencies and scripts
+```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js 18+ 
-- npm or yarn
+- npm or pnpm
 
 ### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd hood-community-nodes
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. **Run the development server**
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Build for Production
-
 ```bash
-npm run build
-npm start
+# Clone the repository
+git clone [your-repo-url]
+cd hood.beamthinktank.space
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 14 with TypeScript
-- **Styling**: Tailwind CSS with custom design system
-- **Maps**: Leaflet.js for interactive mapping
-- **Animations**: Framer Motion for smooth interactions
-- **Icons**: Lucide React for consistent iconography
-
-## 🏗️ Project Structure
-
-```
-hood-community-nodes/
-├── app/                    # Next.js app directory
-│   ├── globals.css        # Global styles and Tailwind
-│   ├── layout.tsx         # Root layout component
-│   └── page.tsx           # Main homepage
-├── components/             # Reusable components
-│   ├── LocationSignup.tsx # Address search and node creation
-│   ├── NodeMap.tsx        # Interactive map with markers
-│   └── NodeCard.tsx       # Detailed node information
-├── public/                 # Static assets
-├── package.json           # Dependencies and scripts
-├── tailwind.config.js     # Tailwind configuration
-├── tsconfig.json          # TypeScript configuration
-└── README.md              # This file
+### Development Commands
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
 ```
 
-## 🎭 Demo Data
+## 🔄 Next Steps (Development Roadmap)
 
-The application includes mock data for demonstration purposes:
+### Phase 1: MVP Enhancement ✅
+- [x] Design system refactor
+- [x] Global dashboard layout
+- [x] Donation tier visualization
+- [x] Enhanced map functionality
+- [x] Governance page
 
-- **Downtown Orlando Arts District**: $3,200/$5,000 goal
-- **Mills 50 Creative Hub**: $1,800/$3,000 goal  
-- **Thornton Park Community**: $2,800/$4,000 goal
+### Phase 2: Core Features 🚧
+- [ ] Supabase integration
+- [ ] User authentication
+- [ ] Real donation tracking
+- [ ] Hood creation workflow
+- [ ] Service request system
 
-Each node has unique perks and member counts to showcase the system's capabilities.
+### Phase 3: Advanced Features 📋
+- [ ] NGO partnership management
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app optimization
+- [ ] Skills site integration widget
+- [ ] Blockchain transparency layer
 
-## 🔧 Customization
+### Phase 4: Scale & Polish 🎯
+- [ ] Performance optimization
+- [ ] SEO and accessibility
+- [ ] Multi-language support
+- [ ] Advanced reporting
+- [ ] Community engagement tools
 
-### Adding New Node Types
-1. Update the mock data in `components/LocationSignup.tsx`
-2. Add new perk categories
-3. Modify milestone triggers as needed
+## 🌐 Integration Points
 
-### Styling Changes
-- Custom colors defined in `tailwind.config.js`
-- Component-specific styles in `app/globals.css`
-- Responsive design using Tailwind breakpoints
+### Skills Site Widget
+- **Location**: `skills.beamthinktank.space`
+- **Purpose**: Show neighborhood progress
+- **Action**: Redirect to Hood detail page
 
-### Map Configuration
-- Leaflet map settings in `components/NodeMap.tsx`
-- Default coordinates and zoom levels
-- Marker customization and popup content
+### Supabase Schema
+```sql
+-- Core tables ready for implementation
+hoods, donations, tiers, services, governance_logs, ngos
+```
 
-## 🚧 Future Enhancements
+## 🎯 Key Benefits
 
-- [ ] User authentication and profiles
-- [ ] Real-time donation tracking
-- [ ] Payment integration (Stripe, PayPal)
-- [ ] Mobile app development
-- [ ] Social media integration
-- [ ] Event management system
-- [ ] Analytics dashboard
-- [ ] Email notifications
+1. **Transparency**: Complete visibility into donation allocation
+2. **Community**: Location-based service delivery
+3. **Scalability**: Tier system grows with community needs
+4. **Governance**: Democratic decision-making process
+5. **Impact**: Clear connection between donations and services
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This project follows a structured development approach:
+- **Design-first**: Clean, professional aesthetics
+- **User-centered**: Community needs drive features
+- **Transparency**: Open governance and decision tracking
+- **Scalability**: Built to grow with community adoption
 
-## 📄 License
+## 📞 Support & Contact
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- **BEAM Band Orlando** for the inspiration and demo content
-- **Nextdoor** for the community-focused approach
-- **Patreon** for the milestone-based reward system concept
-- **OpenStreetMap** for the mapping infrastructure
+For questions about the Hood dashboard or development roadmap:
+- **Project**: BEAM Think Tank
+- **Focus**: Community service delivery through transparent donations
+- **Vision**: Global network of self-governing neighborhoods
 
 ---
 
-Built with ❤️ for community building and local engagement.
+*Built with ❤️ for community empowerment and transparent governance*
