@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
-
 export const metadata: Metadata = {
-  title: 'Hood - Community Node Registration',
-  description: 'Join or create neighborhood nodes linked to donation/service pools',
+  title: 'Neighbor Hood - Community Platform',
+  description: 'Solving community problems through strategic design and compelling collaboration',
 }
 
 export default function RootLayout({
@@ -16,10 +13,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50">
-          {children}
-        </div>
+      <body>
+        {children}
       </body>
     </html>
   )
