@@ -312,7 +312,7 @@ export default function CityPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white rounded-2xl shadow-2xl w-[95vw] max-w-4xl max-h-[90vh] overflow-hidden"
+            className="bg-white rounded-2xl shadow-2xl w-[95vw] max-w-4xl max-h-[90vh] overflow-hidden mx-4 sm:mx-0"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -339,14 +339,14 @@ export default function CityPage() {
             </div>
 
             {/* Modal Content */}
-            <div className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="p-4 sm:p-6">
+              <div className="grid grid-cols-1 gap-8">
                 {/* Left Column - Equipment & Real Estate Cards */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
                     Equipment & Real Estate Needs
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-3 max-w-full">
                     {selectedCategory.equipment.map((item, index) => (
                       <div 
                         key={index} 
@@ -423,7 +423,7 @@ export default function CityPage() {
                     <h3 className="text-lg font-medium text-gray-900 mb-3" style={{ fontFamily: 'sans-serif' }}>
                       Services Offered
                     </h3>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 max-w-full">
                       {selectedCategory.services.map((service, index) => (
                         <span 
                           key={index}

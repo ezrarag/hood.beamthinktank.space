@@ -120,13 +120,13 @@ export default function HomePage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative z-20 px-20 py-8"
+        className="relative z-20 px-4 sm:px-8 lg:px-20 py-8"
       >
         <div className="max-w-15xl mx-auto">
           <div className="flex justify-between items-center">
             {/* Logo/Title with City */}
             <div className="flex items-center">
-              <h1 className="text-2xl font-light text-gray-900" style={{ fontFamily: 'sans-serif' }}>
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-light text-gray-900" style={{ fontFamily: 'sans-serif' }}>
                 Neighborhood: <a href={userCity ? `/${userCity.toLowerCase()}` : '#'} className="hover:text-blue-600 transition-colors cursor-pointer">{userCity || 'Detecting...'}</a>{userNeighborhood && userCity ? ` (${userNeighborhood})` : ''}
               </h1>
             </div>
@@ -195,7 +195,7 @@ export default function HomePage() {
         
 
       {/* Main Content - Clean slate for new design */}
-      <main className="relative z-20 h-full flex flex-col justify-center items-center px-20">
+      <main className="relative z-20 h-full flex flex-col justify-center items-center px-4 sm:px-8 lg:px-20">
         {/* Content area ready for new design */}
       </main>
 
