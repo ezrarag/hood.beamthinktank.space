@@ -312,7 +312,7 @@ export default function CityPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white rounded-2xl shadow-2xl w-[95vw] max-w-7xl max-h-[90vh] overflow-hidden"
+            className="bg-white rounded-2xl shadow-2xl w-[95vw] max-w-4xl max-h-[90vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -339,314 +339,188 @@ export default function CityPage() {
             </div>
 
             {/* Modal Content */}
-            <div className="p-6 overflow-y-auto max-h-[80vh]">
-              <div className={`flex transition-transform duration-500 ease-in-out ${showPaymentForm ? '-translate-x-full' : 'translate-x-0'}`}>
-                {/* First Panel - Category Details */}
-                <div className="min-w-full flex-shrink-0">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {/* Left Column - Services & Overview */}
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
-                          Services Available
-                        </h3>
-                        <div className="flex flex-wrap gap-3">
-                          {selectedCategory.services.map((service, index) => (
-                            <span 
-                              key={index}
-                              className="px-4 py-3 text-blue-900 text-sm rounded-xl border border-blue-200 font-medium shadow-sm hover:shadow-md transition-all duration-200"
-                              style={{
-                                fontFamily: 'sans-serif',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                backdropFilter: 'blur(10px)'
-                              }}
-                            >
-                              {service}
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Equipment & Real Estate Cards */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
+                    Equipment & Real Estate Needs
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedCategory.equipment.map((item, index) => (
+                      <div 
+                        key={index} 
+                        className="group relative bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+                        style={{ fontFamily: 'sans-serif' }}
+                      >
+                        {/* Closed State (Default) */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-900">
+                            {item.name}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-blue-600">
+                              ${item.target.toLocaleString()}
                             </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
-                          Overview
-                        </h3>
-                        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-5 border border-gray-200">
-                          <p className="text-gray-800 mb-4 leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
-                            {selectedCategory.description}
-                          </p>
-                          <div className="bg-blue-100 rounded-xl p-3 border-l-4 border-blue-400">
-                            <p className="text-blue-900 text-sm leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
-                              💡 Support this category by making a donation. Once the threshold is reached, 
-                              community members can request these services through our work order system.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
-                          Impact Story
-                        </h3>
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-200">
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                               <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                               </svg>
                             </div>
-                            <p className="text-green-900 leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
-                              {selectedCategory.impactStory}
-                            </p>
                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Middle Column - Donation Progress & Equipment Cards */}
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
-                          Donation Progress
-                        </h3>
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-200">
+                        
+                        {/* Hover State (Expanded) */}
+                        <div className="absolute inset-0 bg-white rounded-2xl p-4 border border-blue-200 shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="text-lg font-semibold text-blue-900" style={{ fontFamily: 'sans-serif' }}>
-                              {selectedCategory.donationThreshold}%
+                            <span className="text-lg font-semibold text-gray-900">
+                              {item.name}
                             </span>
-                            <span className="text-sm text-blue-600" style={{ fontFamily: 'sans-serif' }}>
-                              of goal reached
-                            </span>
-                          </div>
-                          <div className="w-full bg-blue-200 rounded-full h-3 overflow-hidden">
-                            <div 
-                              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
-                              style={{ width: `${selectedCategory.donationThreshold}%` }}
-                            ></div>
-                          </div>
-                          <div className="mt-3 flex items-center gap-2">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span className="text-xs text-blue-700" style={{ fontFamily: 'sans-serif' }}>
-                              {selectedCategory.donationThreshold >= 100 ? 'Fully Funded!' : `${100 - selectedCategory.donationThreshold}% remaining`}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-3" style={{ fontFamily: 'sans-serif' }}>
-                          Equipment & Real Estate Needs ({selectedCategory.equipment.length} items)
-                        </h3>
-                        <div className="space-y-3 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
-                          {selectedCategory.equipment.map((item, index) => (
-                            <div key={index} className="bg-white rounded-xl p-3 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-200">
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium text-gray-900 truncate flex-1 mr-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                                  {item.name}
-                                </span>
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                  <span className="text-sm font-semibold text-blue-600" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                                    ${item.target.toLocaleString()}
-                                  </span>
-                                  {item.funded ? (
-                                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                      <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                      </svg>
-                                    </div>
-                                  ) : (
-                                    <div className="w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                      <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                      </svg>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
-                                <div 
-                                  className="bg-gradient-to-r from-green-400 to-green-500 h-1.5 rounded-full transition-all duration-300"
-                                  style={{ width: `${item.progress}%` }}
-                                ></div>
-                              </div>
-                              <div className="flex justify-between items-center">
-                                <span className="text-xs text-gray-500" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                                  {item.progress}% funded
-                                </span>
-                                {item.funded && (
-                                  <span className="text-xs text-green-600 font-medium flex items-center gap-1" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                                    Funded
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right Column - Work Order & Donation */}
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
-                          Work Order Form
-                        </h3>
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 shadow-sm">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                               </svg>
                             </div>
-                            <span className="text-sm font-semibold text-blue-900" style={{ fontFamily: 'sans-serif' }}>
-                              Service Requests
-                            </span>
                           </div>
-                          <p className="text-blue-800 text-sm leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
-                            Work order forms will be available once the donation threshold is reached. 
-                            This ensures we can provide quality services to all community members.
-                          </p>
-                          <div className="mt-4 flex items-center gap-2">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                            <span className="text-xs text-blue-600" style={{ fontFamily: 'sans-serif' }}>
-                              Currently {selectedCategory.donationThreshold}% funded
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
-                          Donate Now
-                        </h3>
-                        <div className="relative">
-                          <button 
-                            onClick={() => setIsDonationMenuOpen(!isDonationMenuOpen)}
-                            className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transform hover:scale-105"
-                          >
-                            <span style={{ fontFamily: 'Instrument Sans, sans-serif' }}>Support This Category</span>
-                            <svg className={`w-4 h-4 transition-transform duration-200 ${isDonationMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
-                          
-                          {/* Upward Menu */}
-                          {isDonationMenuOpen && (
-                            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
-                              <button 
-                                onClick={() => {
-                                  setSelectedAmount(25)
-                                  setShowPaymentForm(true)
-                                  setIsDonationMenuOpen(false)
-                                }}
-                                className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100"
-                                style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                              >
-                                <span className="font-medium">$25</span>
-                                <span className="text-gray-600 text-sm ml-2">Quick Support</span>
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  setSelectedAmount(50)
-                                  setShowPaymentForm(true)
-                                  setIsDonationMenuOpen(false)
-                                }}
-                                className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100"
-                                style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                              >
-                                <span className="font-medium">$50</span>
-                                <span className="text-gray-600 text-sm ml-2">Standard Support</span>
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  setShowCustomAmount(true)
-                                  setIsDonationMenuOpen(false)
-                                }}
-                                className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
-                                style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                              >
-                                <span className="font-medium">Custom Amount</span>
-                                <span className="text-gray-600 text-sm ml-2">Choose your own</span>
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">Target Amount:</span>
+                              <span className="text-lg font-bold text-blue-600">${item.target.toLocaleString()}</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${item.progress}%` }}
+                              ></div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-500">
+                                {item.progress}% funded
+                              </span>
+                              {item.funded && (
+                                <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+                                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                  Funded
+                                </span>
+                              )}
+                            </div>
+                            <div className="pt-2">
+                              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
+                                Support This Item
                               </button>
                             </div>
-                          )}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Second Panel - Payment Form */}
-                <div className="min-w-full flex-shrink-0">
-                  <div className="max-w-md mx-auto">
-                    <div className="text-center mb-8">
-                      <button
-                        onClick={() => setShowPaymentForm(false)}
-                        className="text-gray-400 hover:text-gray-600 mb-4"
-                      >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                      </button>
-                      <h3 className="text-2xl font-medium text-gray-900 mb-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                        Complete Your Donation
-                      </h3>
-                      <p className="text-gray-600" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                        Supporting {selectedCategory.title} with ${selectedAmount}
-                      </p>
+                {/* Right Column - Services, Work Order, Donate */}
+                <div className="space-y-6">
+                  {/* Services Offered */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3" style={{ fontFamily: 'sans-serif' }}>
+                      Services Offered
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCategory.services.map((service, index) => (
+                        <span 
+                          key={index}
+                          className="px-3 py-2 text-blue-900 text-sm rounded-lg border border-blue-200 font-medium bg-blue-50"
+                          style={{ fontFamily: 'sans-serif' }}
+                        >
+                          {service}
+                        </span>
+                      ))}
                     </div>
+                  </div>
 
-                    <div className="space-y-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                          Email Address
-                        </label>
-                        <input
-                          type="email"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="your@email.com"
-                          style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                        />
+                  {/* Work Order Form */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3" style={{ fontFamily: 'sans-serif' }}>
+                      Work Order Form
+                    </h3>
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                          <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <span className="text-sm font-semibold text-blue-900">
+                          Service Requests
+                        </span>
                       </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                          Name
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Your full name"
-                          style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                        />
+                      <p className="text-blue-800 text-sm leading-relaxed">
+                        Work order forms will be available once the donation threshold is reached. 
+                        This ensures we can provide quality services to all community members.
+                      </p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                        <span className="text-xs text-blue-600">
+                          Currently {selectedCategory.donationThreshold}% funded
+                        </span>
                       </div>
+                    </div>
+                  </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
-                          Message (Optional)
-                        </label>
-                        <textarea
-                          rows={3}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Share why you're supporting this cause..."
-                          style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                        />
-                      </div>
-
-                      <div className="pt-4">
-                        <button
-                          onClick={() => handleStripePayment(selectedCategory.id, selectedCategory.title, selectedAmount)}
-                          className="w-full bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                  {/* Donate Now Button */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3" style={{ fontFamily: 'sans-serif' }}>
+                      Support This Category
+                    </h3>
+                    <button 
+                      onClick={() => setIsDonationMenuOpen(!isDonationMenuOpen)}
+                      className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+                      style={{ fontFamily: 'Instrument Sans, sans-serif' }}
+                    >
+                      <span>Donate Now</span>
+                      <svg className={`w-4 h-4 transition-transform duration-200 ${isDonationMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    
+                    {/* Donation Menu */}
+                    {isDonationMenuOpen && (
+                      <div className="mt-3 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+                        <button 
+                          onClick={() => {
+                            setSelectedAmount(25)
+                            setShowPaymentForm(true)
+                            setIsDonationMenuOpen(false)
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100"
                           style={{ fontFamily: 'Instrument Sans, sans-serif' }}
                         >
-                          <span>Proceed to Payment</span>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
+                          <span className="font-medium">$25</span>
+                          <span className="text-gray-600 text-sm ml-2">Quick Support</span>
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setSelectedAmount(50)
+                            setShowPaymentForm(true)
+                            setIsDonationMenuOpen(false)
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100"
+                          style={{ fontFamily: 'Instrument Sans, sans-serif' }}
+                        >
+                          <span className="font-medium">$50</span>
+                          <span className="text-gray-600 text-sm ml-2">Standard Support</span>
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setShowCustomAmount(true)
+                            setIsDonationMenuOpen(false)
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                          style={{ fontFamily: 'Instrument Sans, sans-serif' }}
+                        >
+                          <span className="font-medium">Custom Amount</span>
+                          <span className="text-gray-600 text-sm ml-2">Choose your own</span>
                         </button>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -712,6 +586,86 @@ export default function CityPage() {
                   style={{ fontFamily: 'Instrument Sans, sans-serif' }}
                 >
                   Continue
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Payment Form Modal */}
+      {showPaymentForm && selectedCategory && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+          >
+            <div className="text-center mb-6">
+              <button
+                onClick={() => setShowPaymentForm(false)}
+                className="text-gray-400 hover:text-gray-600 mb-4"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <h3 className="text-2xl font-medium text-gray-900 mb-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
+                Complete Your Donation
+              </h3>
+              <p className="text-gray-600" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
+                Supporting {selectedCategory.title} with ${selectedAmount}
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="your@email.com"
+                  style={{ fontFamily: 'Instrument Sans, sans-serif' }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
+                  Name
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Your full name"
+                  style={{ fontFamily: 'Instrument Sans, sans-serif' }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
+                  Message (Optional)
+                </label>
+                <textarea
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Share why you're supporting this cause..."
+                  style={{ fontFamily: 'Instrument Sans, sans-serif' }}
+                />
+              </div>
+
+              <div className="pt-4">
+                <button
+                  onClick={() => handleStripePayment(selectedCategory.id, selectedCategory.title, selectedAmount)}
+                  className="w-full bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                  style={{ fontFamily: 'Instrument Sans, sans-serif' }}
+                >
+                  <span>Proceed to Payment</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
               </div>
             </div>
