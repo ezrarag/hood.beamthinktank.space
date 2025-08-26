@@ -350,14 +350,15 @@ export default function CityPage() {
                         <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
                           Services Available
                         </h3>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-3">
                           {selectedCategory.services.map((service, index) => (
                             <span 
                               key={index}
-                              className="px-3 py-2 text-gray-700 text-sm rounded-md border border-gray-200 font-light"
+                              className="px-4 py-3 text-blue-900 text-sm rounded-xl border border-blue-200 font-medium shadow-sm hover:shadow-md transition-all duration-200"
                               style={{
                                 fontFamily: 'sans-serif',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)'
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                backdropFilter: 'blur(10px)'
                               }}
                             >
                               {service}
@@ -370,22 +371,35 @@ export default function CityPage() {
                         <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
                           Overview
                         </h3>
-                        <p className="text-gray-700 mb-4" style={{ fontFamily: 'sans-serif' }}>
-                          {selectedCategory.description}
-                        </p>
-                        <p className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>
-                          Support this category by making a donation. Once the threshold is reached, 
-                          community members can request these services through our work order system.
-                        </p>
+                        <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-5 border border-gray-200">
+                          <p className="text-gray-800 mb-4 leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
+                            {selectedCategory.description}
+                          </p>
+                          <div className="bg-blue-100 rounded-xl p-3 border-l-4 border-blue-400">
+                            <p className="text-blue-900 text-sm leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
+                              💡 Support this category by making a donation. Once the threshold is reached, 
+                              community members can request these services through our work order system.
+                            </p>
+                          </div>
+                        </div>
                       </div>
 
                       <div>
                         <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
                           Impact Story
                         </h3>
-                        <p className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>
-                          {selectedCategory.impactStory}
-                        </p>
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-200">
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                              <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                            </div>
+                            <p className="text-green-900 leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
+                              {selectedCategory.impactStory}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -395,22 +409,35 @@ export default function CityPage() {
                         <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
                           Donation Progress
                         </h3>
-                        <div className="w-full bg-gray-200 rounded-full h-3">
-                          <div 
-                            className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                            style={{ width: `${selectedCategory.donationThreshold}%` }}
-                          ></div>
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-200">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-lg font-semibold text-blue-900" style={{ fontFamily: 'sans-serif' }}>
+                              {selectedCategory.donationThreshold}%
+                            </span>
+                            <span className="text-sm text-blue-600" style={{ fontFamily: 'sans-serif' }}>
+                              of goal reached
+                            </span>
+                          </div>
+                          <div className="w-full bg-blue-200 rounded-full h-3 overflow-hidden">
+                            <div 
+                              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
+                              style={{ width: `${selectedCategory.donationThreshold}%` }}
+                            ></div>
+                          </div>
+                          <div className="mt-3 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span className="text-xs text-blue-700" style={{ fontFamily: 'sans-serif' }}>
+                              {selectedCategory.donationThreshold >= 100 ? 'Fully Funded!' : `${100 - selectedCategory.donationThreshold}% remaining`}
+                            </span>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-600 mt-2" style={{ fontFamily: 'sans-serif' }}>
-                          {selectedCategory.donationThreshold}% of goal reached
-                        </p>
                       </div>
 
-                      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <div>
                         <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
                           Equipment & Real Estate Needs ({selectedCategory.equipment.length} items)
                         </h3>
-                        <div className="space-y-3">
+                        <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
                           {selectedCategory.equipment.map((item, index) => (
                             <div key={index} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
                               <div className="flex items-center justify-between mb-3">
@@ -464,11 +491,27 @@ export default function CityPage() {
                         <h3 className="text-sm font-medium text-gray-500 mb-2" style={{ fontFamily: 'sans-serif' }}>
                           Work Order Form
                         </h3>
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                          <p className="text-gray-600 text-sm" style={{ fontFamily: 'sans-serif' }}>
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 shadow-sm">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </div>
+                            <span className="text-sm font-semibold text-blue-900" style={{ fontFamily: 'sans-serif' }}>
+                              Service Requests
+                            </span>
+                          </div>
+                          <p className="text-blue-800 text-sm leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
                             Work order forms will be available once the donation threshold is reached. 
                             This ensures we can provide quality services to all community members.
                           </p>
+                          <div className="mt-4 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span className="text-xs text-blue-600" style={{ fontFamily: 'sans-serif' }}>
+                              Currently {selectedCategory.donationThreshold}% funded
+                            </span>
+                          </div>
                         </div>
                       </div>
 
@@ -479,7 +522,7 @@ export default function CityPage() {
                         <div className="relative">
                           <button 
                             onClick={() => setIsDonationMenuOpen(!isDonationMenuOpen)}
-                            className="w-full bg-black hover:bg-gray-800 text-white font-light py-3 px-6 rounded-full transition-colors duration-200 flex items-center justify-center gap-2 shadow-lg"
+                            className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transform hover:scale-105"
                           >
                             <span style={{ fontFamily: 'Instrument Sans, sans-serif' }}>Support This Category</span>
                             <svg className={`w-4 h-4 transition-transform duration-200 ${isDonationMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
