@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // Type definitions
 interface Category {
@@ -74,6 +74,21 @@ export default function CityPage() {
   const [customAmount, setCustomAmount] = useState('')
   const [showPaymentForm, setShowPaymentForm] = useState(false)
   const [selectedAmount, setSelectedAmount] = useState(0)
+  const [isBuildDropdownOpen, setIsBuildDropdownOpen] = useState(false)
+
+  // Close build dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isBuildDropdownOpen) {
+        setIsBuildDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isBuildDropdownOpen])
 
   // Mock category data - represents different areas where neighborhood can donate for services
   const categories = [
@@ -165,38 +180,99 @@ export default function CityPage() {
               <h1 className="text-2xl font-light text-gray-900" style={{ fontFamily: 'sans-serif' }}>Neighborhood</h1>
             </div>
 
-            {/* Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <a href="/" className="text-gray-600 hover:text-gray-900 transition-colors font-light text-sm" style={{ fontFamily: 'sans-serif' }}>
-                Home
-              </a>
-              <a href="/governance" className="text-gray-600 hover:text-gray-900 transition-colors font-light text-sm" style={{ fontFamily: 'sans-serif' }}>
-                About
-              </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors font-light text-sm" style={{ fontFamily: 'sans-serif' }}>
-                Contact
-              </a>
-            </nav>
 
-            {/* CTA Button */}
-            <button className="bg-black hover:bg-gray-800 text-white font-light py-3 px-6 rounded-lg transition-colors duration-200" 
-              style={{
-                fontFamily: 'sans-serif',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2)',
-                transform: 'translateY(0)',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.3)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2)'
-              }}
-            >
-              Build
-            </button>
+
+            {/* CTA Button with Dropdown */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsBuildDropdownOpen(!isBuildDropdownOpen)}
+                className="bg-black hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-2xl transition-colors duration-200 flex items-center gap-2" 
+                style={{
+                  fontFamily: 'sans-serif',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2)',
+                  transform: 'translateY(0)',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.3)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                <span>Build</span>
+                <svg className={`w-4 h-4 transition-transform duration-200 ${isBuildDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {/* Build Dropdown Menu */}
+              {isBuildDropdownOpen && (
+                <>
+                  {/* Blur overlay */}
+                  <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" onClick={() => setIsBuildDropdownOpen(false)} />
+                  
+                  {/* Dropdown cards */}
+                  <div className="absolute right-0 mt-2 w-80 space-y-3 z-50">
+                    <a 
+                      href="/governance"
+                      className="block w-full bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
+                      style={{ fontFamily: 'sans-serif' }}
+                    >
+                                              <div className="flex items-start space-x-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white font-bold text-lg">1</span>
+                          </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-2">Governance</h3>
+                          <p className="text-gray-300 leading-relaxed">
+                            Learn about our student-driven governance model and decision-making process
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+                    
+                                        <a 
+                      href="/contact"
+                      className="block w-full bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
+                      style={{ fontFamily: 'sans-serif' }}
+                    >
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-bold text-lg">2</span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-2">Projects</h3>
+                          <p className="text-gray-300 leading-relaxed">
+                            Explore ongoing community projects and initiatives
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+                    
+                                        <a 
+                      href="/contact"
+                      className="block w-full bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
+                      style={{ fontFamily: 'sans-serif' }}
+                    >
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-bold text-lg">3</span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-2">Community</h3>
+                          <p className="text-gray-300 leading-relaxed">
+                            Connect with community members and get involved
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -220,7 +296,7 @@ export default function CityPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-left mb-8 w-full max-w-6xl"
+          className="text-left mb-8 w-full max-w-7xl"
         >
           <h2 className="text-5xl font-light text-gray-900 mb-2" style={{ fontFamily: 'sans-serif' }}>
             {city.charAt(0).toUpperCase() + city.slice(1)} Services
@@ -340,20 +416,20 @@ export default function CityPage() {
 
             {/* Modal Content */}
             <div className="p-4 sm:p-6">
-              <div className="grid grid-cols-1 gap-8">
-                {/* Left Column - Equipment & Real Estate Cards */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Scrollable Equipment List */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
                     Equipment & Real Estate Needs
                   </h3>
-                  <div className="space-y-3 max-w-full">
+                  <div className="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                     {selectedCategory.equipment.map((item, index) => (
                       <div 
                         key={index} 
-                        className="group relative bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+                        className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
                         style={{ fontFamily: 'sans-serif' }}
                       >
-                        {/* Closed State (Default) */}
+                        {/* Item Header */}
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-900">
                             {item.name}
@@ -370,97 +446,63 @@ export default function CityPage() {
                           </div>
                         </div>
                         
-                        {/* Hover State (Expanded) */}
-                        <div className="absolute inset-0 bg-white rounded-2xl p-4 border border-blue-200 shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-lg font-semibold text-gray-900">
-                              {item.name}
+                        {/* Progress Bar */}
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                          <div 
+                            className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${item.progress}%` }}
+                          ></div>
+                        </div>
+                        
+                        {/* Status */}
+                        <div className="flex justify-between items-center mt-2">
+                          <span className="text-xs text-gray-500">
+                            {item.progress}% funded
+                          </span>
+                          {item.funded && (
+                            <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                              Funded
                             </span>
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                              </svg>
-                            </div>
-                          </div>
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-gray-600">Target Amount:</span>
-                              <span className="text-lg font-bold text-blue-600">${item.target.toLocaleString()}</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div 
-                                className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full transition-all duration-300"
-                                style={{ width: `${item.progress}%` }}
-                              ></div>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-500">
-                                {item.progress}% funded
-                              </span>
-                              {item.funded && (
-                                <span className="text-xs text-green-600 font-medium flex items-center gap-1">
-                                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                  Funded
-                                </span>
-                              )}
-                            </div>
-                            <div className="pt-2">
-                              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
-                                Support This Item
-                              </button>
-                            </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Right Column - Services, Work Order, Donate */}
+                {/* Right Column - Picture Card with Service Buttons */}
                 <div className="space-y-6">
-                  {/* Services Offered */}
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-3" style={{ fontFamily: 'sans-serif' }}>
-                      Services Offered
-                    </h3>
-                    <div className="flex flex-wrap gap-2 max-w-full">
-                      {selectedCategory.services.map((service, index) => (
-                        <span 
-                          key={index}
-                          className="px-3 py-2 text-blue-900 text-sm rounded-lg border border-blue-200 font-medium bg-blue-50"
-                          style={{ fontFamily: 'sans-serif' }}
-                        >
-                          {service}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Work Order Form */}
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-3" style={{ fontFamily: 'sans-serif' }}>
-                      Work Order Form
-                    </h3>
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                          <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  {/* Picture Card */}
+                  <div className="relative">
+                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-200 shadow-sm">
+                      <div className="text-center mb-4">
+                        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-3 flex items-center justify-center">
+                          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                           </svg>
                         </div>
-                        <span className="text-sm font-semibold text-blue-900">
-                          Service Requests
-                        </span>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{selectedCategory.title}</h3>
+                        <p className="text-gray-600 text-sm">{selectedCategory.subtitle}</p>
                       </div>
-                      <p className="text-blue-800 text-sm leading-relaxed">
-                        Work order forms will be available once the donation threshold is reached. 
-                        This ensures we can provide quality services to all community members.
-                      </p>
-                      <div className="mt-3 flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                        <span className="text-xs text-blue-600">
-                          Currently {selectedCategory.donationThreshold}% funded
-                        </span>
+                      
+                      {/* Service Buttons Overlay */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {selectedCategory.services.map((service, index) => (
+                          <button
+                            key={index}
+                            className="group relative bg-white hover:bg-blue-50 rounded-xl p-3 border border-gray-200 transition-all duration-200 hover:border-blue-300 hover:shadow-md"
+                          >
+                            <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">
+                              {service}
+                            </span>
+                            {/* Hover Popup */}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-blue-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto whitespace-nowrap z-10">
+                              Click to learn more about {service}
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-blue-600"></div>
+                            </div>
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -471,56 +513,17 @@ export default function CityPage() {
                       Support This Category
                     </h3>
                     <button 
-                      onClick={() => setIsDonationMenuOpen(!isDonationMenuOpen)}
+                      onClick={() => {
+                        // Navigate to the healthcare donation page with category info
+                        const categorySlug = selectedCategory.title.toLowerCase().replace(/\s+/g, '-')
+                        const cityParam = Array.isArray(params.city) ? params.city[0] : params.city
+                        window.location.href = `/donate/${categorySlug}?city=${encodeURIComponent(cityParam)}`
+                      }}
                       className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
                       style={{ fontFamily: 'Instrument Sans, sans-serif' }}
                     >
                       <span>Donate Now</span>
-                      <svg className={`w-4 h-4 transition-transform duration-200 ${isDonationMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
                     </button>
-                    
-                    {/* Donation Menu */}
-                    {isDonationMenuOpen && (
-                      <div className="mt-3 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
-                        <button 
-                          onClick={() => {
-                            setSelectedAmount(25)
-                            setShowPaymentForm(true)
-                            setIsDonationMenuOpen(false)
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100"
-                          style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                        >
-                          <span className="font-medium">$25</span>
-                          <span className="text-gray-600 text-sm ml-2">Quick Support</span>
-                        </button>
-                        <button 
-                          onClick={() => {
-                            setSelectedAmount(50)
-                            setShowPaymentForm(true)
-                            setIsDonationMenuOpen(false)
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100"
-                          style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                        >
-                          <span className="font-medium">$50</span>
-                          <span className="text-gray-600 text-sm ml-2">Standard Support</span>
-                        </button>
-                        <button 
-                          onClick={() => {
-                            setShowCustomAmount(true)
-                            setIsDonationMenuOpen(false)
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
-                          style={{ fontFamily: 'Instrument Sans, sans-serif' }}
-                        >
-                          <span className="font-medium">Custom Amount</span>
-                          <span className="text-gray-600 text-sm ml-2">Choose your own</span>
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>

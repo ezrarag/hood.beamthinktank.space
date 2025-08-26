@@ -5,60 +5,60 @@ import { Shield, Users, TrendingUp, Globe, Target, Gift, ArrowRight } from 'luci
 
 export default function GovernancePage() {
   const governanceStats = {
-    totalDecisions: 156,
-    activeHoods: 47,
-    averageParticipation: 78,
-    transparencyScore: 94
+    totalDecisions: 212,
+    activeHoods: 54,
+    studentLeaders: 128,
+    communityBoardMembers: 54
   }
 
   const governanceFlow = [
     {
       step: 1,
-      title: 'Community Input',
-      description: 'Hood members propose services and vote on priorities',
+      title: 'Student Leadership',
+      description: 'Local student leaders gather input and present community needs',
       icon: Users,
       color: 'from-hood-500 to-hood-600'
     },
     {
       step: 2,
-      title: 'Donation Collection',
-      description: 'Transparent tracking of all contributions and allocations',
-      icon: TrendingUp,
+      title: 'Neighborhood Representation',
+      description: 'Board members advocate for their closest neighborhoods',
+      icon: Globe,
       color: 'from-beam-500 to-beam-600'
     },
     {
       step: 3,
-      title: 'Service Allocation',
-      description: 'Automatic distribution based on tier milestones',
-      icon: Target,
+      title: 'Community Voting',
+      description: 'Hood residents vote directly on priorities and initiatives',
+      icon: TrendingUp,
       color: 'from-green-500 to-green-600'
     },
     {
       step: 4,
-      title: 'NGO Partnership',
-      description: 'Verified organizations deliver community services',
-      icon: Gift,
+      title: 'Action & Accountability',
+      description: 'Funds and services are unlocked and tracked transparently',
+      icon: Shield,
       color: 'from-purple-500 to-purple-600'
     }
   ]
 
   const recentDecisions = [
     {
-      hood: 'Downtown Orlando Arts District',
-      decision: 'Approved new music workshop series',
-      outcome: 'Service unlocked at $3,200 tier',
-      date: '2 days ago'
+      hood: 'Parramore Neighborhood',
+      decision: 'Students proposed after-school tutoring with local mentors',
+      outcome: 'Approved and funded at $4,000 tier',
+      date: '3 days ago'
     },
     {
-      hood: 'Mills 50 Creative Hub',
-      decision: 'Voted for community garden expansion',
-      outcome: 'Cleaning services activated',
+      hood: 'Lake Eola Heights',
+      decision: 'Board member advocated for new senior wellness program',
+      outcome: 'Community voted yes – program launches this fall',
       date: '1 week ago'
     },
     {
-      hood: 'Thornton Park Community',
-      decision: 'Funded local business support program',
-      outcome: 'Food assistance tier reached',
+      hood: 'College Park',
+      decision: 'Residents prioritized bike safety workshops led by students',
+      outcome: 'Unlocked at $2,500 milestone',
       date: '2 weeks ago'
     }
   ]
@@ -93,8 +93,9 @@ export default function GovernancePage() {
             Transparent Community Governance
           </h2>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            See how decisions are made, how donations are allocated, and how community services 
-            are delivered through our transparent governance model.
+            Experience student-driven governance where local leaders gather community input, 
+            board members represent their neighborhoods, and residents vote directly on priorities 
+            through our transparent, blockchain-tracked system.
           </p>
         </motion.div>
 
@@ -128,8 +129,8 @@ export default function GovernancePage() {
           <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl border border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Participation</p>
-                <p className="text-3xl font-bold text-green-900">{governanceStats.averageParticipation}%</p>
+                <p className="text-sm font-medium text-green-600">Student Leaders</p>
+                <p className="text-3xl font-bold text-green-900">{governanceStats.studentLeaders}</p>
               </div>
               <Users className="w-8 h-8 text-green-500" />
             </div>
@@ -138,8 +139,8 @@ export default function GovernancePage() {
           <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl border border-purple-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600">Transparency</p>
-                <p className="text-3xl font-bold text-purple-900">{governanceStats.transparencyScore}%</p>
+                <p className="text-sm font-medium text-purple-600">Board Members</p>
+                <p className="text-3xl font-bold text-purple-900">{governanceStats.communityBoardMembers}</p>
               </div>
               <Target className="w-8 h-8 text-purple-500" />
             </div>
