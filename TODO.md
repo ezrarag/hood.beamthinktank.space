@@ -1,107 +1,93 @@
-# 📋 Neighbor Hood - Development TODO
+# TODO.md
 
-## ✅ **COMPLETED - Portfolio Design v3.0**
+## ✅ Recently Completed
 
-### 🎨 Design Transformation
-- [x] **Complete page redesign** from Hood dashboard to portfolio aesthetic
-- [x] **Michael Carter-inspired layout** with clean, minimalist design
-- [x] **Background image integration** with gaussian blur overlay
-- [x] **Instrument Sans font** implementation throughout
-- [x] **Portfolio-style typography** with large hero text (64px)
-- [x] **Clean color palette** (black, white, grays, purple accent)
-- [x] **Responsive design** for mobile and desktop
+### Home Page Header Restructuring
+- [x] Changed title format from "Neighborhood" to "Neighborhood: [City] ([Neighborhood])"
+- [x] Made city name clickable and link to city slug page
+- [x] Replaced horizontal navigation with dropdown menu
+- [x] Updated dropdown styling to black background with white text
+- [x] Added location testing functionality for development
+- [x] Added reset location button to return to detected location
 
-### 🚀 Interactive Features
-- [x] **Framer Motion animations** for smooth transitions
-- [x] **Dashboard modal** with community statistics
-- [x] **Dynamic navigation** with city placeholder (Atlanta)
-- [x] **Interactive buttons** with hover effects
-- [x] **Portfolio elements** (status indicators, showcase cards)
+### City Page Modal Improvements
+- [x] Fixed missing donation buttons and work order functionality
+- [x] Restructured modal layout from 2 columns to 3 columns
+- [x] Redesigned equipment cards with modern styling (rounded corners, shadows, status icons)
+- [x] Added visual debugging to make equipment section more visible
+- [x] Equipment cards now show in column alongside donation progress
+- [x] Added equipment count display in modal header
 
-### 🛠 Technical Implementation
-- [x] **Next.js 14** with App Router
-- [x] **TypeScript** integration
-- [x] **TailwindCSS** styling system
-- [x] **CSS custom properties** for portfolio styling
-- [x] **Git integration** with proper .gitignore
-- [x] **Build optimization** and deployment readiness
+### Technical Fixes
+- [x] Fixed JSX syntax errors and missing closing tags
+- [x] Added proper modal trigger functionality
+- [x] Improved responsive design for different screen sizes
+- [x] Enhanced modal sizing and overflow handling
 
----
+## 🚧 In Progress
 
-## 🔄 **NEXT STEPS - Potential Enhancements**
+### Modal Functionality
+- [ ] Ensure equipment cards are fully visible in all scenarios
+- [ ] Test donation flow end-to-end
+- [ ] Verify work order system integration
 
-### 🌍 **Location & Personalization**
-- [ ] **Real geolocation detection** to replace "Atlanta" placeholder
-- [ ] **City-specific content** and Hood information
-- [ ] **User location preferences** and settings
-- [ ] **Multi-city navigation** with dropdown selection
+## 📋 Future Tasks
 
-### 📊 **Dashboard Integration**
-- [ ] **Full dashboard page** beyond the modal
-- [ ] **Real-time statistics** from backend
-- [ ] **Hood progress tracking** and visualization
-- [ ] **Donation tier system** implementation
-- [ ] **Service unlock tracking** and status
+### UI/UX Improvements
+- [ ] Add loading states for location detection
+- [ ] Improve mobile responsiveness for location testing modal
+- [ ] Add animations for equipment card interactions
+- [ ] Consider adding breadcrumb navigation
 
-### 🏘️ **Community Features**
-- [ ] **Hood creation workflow** for new communities
-- [ ] **Member registration** and profiles
-- [ ] **Community events** and calendar
-- [ ] **Service request system** for residents
-- [ ] **NGO partnership** management
+### Feature Enhancements
+- [ ] Add more granular neighborhood detection
+- [ ] Implement location favorites/saved locations
+- [ ] Add city-specific branding/theming
+- [ ] Consider adding location-based service recommendations
 
-### 🎨 **Design Enhancements**
-- [ ] **Dark mode toggle** for user preference
-- [ ] **Custom illustrations** or icons
-- [ ] **Loading states** and skeleton screens
-- [ ] **Error boundaries** and user feedback
-- [ ] **Accessibility improvements** (ARIA labels, keyboard navigation)
+### Technical Debt
+- [ ] Refactor location detection logic into custom hook
+- [ ] Add error boundaries for location services
+- [ ] Implement proper TypeScript interfaces for location data
+- [ ] Add unit tests for location functionality
 
-### 🔧 **Technical Improvements**
-- [ ] **Performance optimization** (image lazy loading, code splitting)
-- [ ] **SEO optimization** (meta tags, structured data)
-- [ ] **Analytics integration** (Google Analytics, user tracking)
-- [ ] **Testing suite** (Jest, React Testing Library)
-- [ ] **CI/CD pipeline** for automated deployment
+### Content Management
+- [ ] Create admin interface for managing city services
+- [ ] Add dynamic content for different cities
+- [ ] Implement content versioning for city pages
 
----
+## 🐛 Known Issues
 
-## 🎯 **PRIORITY RANKING**
+- Equipment cards may need additional styling to ensure visibility
+- Location testing modal could benefit from better mobile UX
+- Some edge cases in location detection need handling
 
-### **High Priority** 🚨
-1. **Real geolocation detection** - Replace placeholder with actual user location
-2. **Full dashboard page** - Expand beyond modal to dedicated page
-3. **Mobile optimization** - Ensure perfect mobile experience
+## 🔧 Development Notes
 
-### **Medium Priority** 📋
-1. **Hood creation workflow** - Allow users to create new communities
-2. **Performance optimization** - Improve loading times and user experience
-3. **Accessibility improvements** - Ensure site is usable by everyone
+### Location Testing
+- Use "Test Location" button to simulate different cities
+- Format: City (Neighborhood) - e.g., "Atlanta (East Point)"
+- Reset button returns to detected location
 
-### **Low Priority** 💡
-1. **Dark mode** - Nice-to-have feature
-2. **Advanced animations** - Additional motion effects
-3. **Custom illustrations** - Brand-specific visual elements
+### Modal Structure
+- 3-column layout: Services/Overview | Progress/Equipment | Work Order/Donation
+- Equipment cards styled with rounded corners, shadows, and status icons
+- Donation system fully integrated with Stripe
 
----
+### Styling Guidelines
+- Use `Instrument Sans` font for UI elements
+- Maintain consistent spacing with `space-y-6` classes
+- Equipment cards use `rounded-2xl` for modern appearance
+- Dropdown menus use black background with white text
 
-## 🚀 **DEPLOYMENT STATUS**
+## 📝 Commit History
 
-- ✅ **Development environment** - Working locally
-- ✅ **Build process** - `npm run build` successful
-- ✅ **Git integration** - Clean repository, no large files
-- ✅ **Ready for deployment** - Can deploy to Vercel/Netlify immediately
+### Recent Changes
+- Home page header restructuring with location testing
+- City page modal improvements and equipment card redesign
+- Fixed JSX syntax errors and modal functionality
+- Enhanced responsive design and user experience
 
 ---
 
-## 📝 **NOTES**
-
-- **Current design** perfectly matches the Michael Carter portfolio aesthetic
-- **Background image** is placeholder from Framer template - consider custom image
-- **Font loading** is optimized with Google Fonts import
-- **Animations** are subtle and professional, not overwhelming
-- **Code structure** is clean and maintainable for future development
-
----
-
-*Last updated: Portfolio Design v3.0 completion*
+*Last updated: $(date)*
