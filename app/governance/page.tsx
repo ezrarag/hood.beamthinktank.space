@@ -94,16 +94,56 @@ export default function GovernancePage() {
           </h2>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
             Experience student-driven governance where local leaders gather community input, 
-            board members represent their neighborhoods, and residents vote directly on priorities 
-            through our transparent, blockchain-tracked system.
+            board members represent their neighborhoods, and residents vote directly on priorities.
           </p>
+        </motion.div>
+
+        {/* Governance Flow - Moved above stats */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-16"
+        >
+          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            How Governance Works
+          </h3>
+          <div className="grid md:grid-cols-4 gap-6">
+            {governanceFlow.map((item, index) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + index * 0.1 }}
+                className="relative"
+              >
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center h-full">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                    <item.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold text-gray-600">
+                    {item.step}
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">{item.title}</h4>
+                  <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                </div>
+                
+                {/* Arrow connector */}
+                {index < governanceFlow.length - 1 && (
+                  <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2">
+                    <ArrowRight className="w-6 h-6 text-gray-300" />
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Governance Stats */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.4 }}
           className="grid md:grid-cols-4 gap-6 mb-16"
         >
           <div className="bg-gradient-to-br from-hood-50 to-hood-100 p-6 rounded-2xl border border-hood-200">
@@ -147,52 +187,11 @@ export default function GovernancePage() {
           </div>
         </motion.div>
 
-        {/* Governance Flow */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-16"
-        >
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            How Governance Works
-          </h3>
-          <div className="grid md:grid-cols-4 gap-6">
-            {governanceFlow.map((item, index) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                className="relative"
-              >
-                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center h-full">
-                  <div className={`w-16 h-16 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
-                    <item.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold text-gray-600">
-                    {item.step}
-                  </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">{item.title}</h4>
-                  <p className="text-gray-600 leading-relaxed">{item.description}</p>
-                </div>
-                
-                {/* Arrow connector */}
-                {index < governanceFlow.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2">
-                    <ArrowRight className="w-6 h-6 text-gray-300" />
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Recent Decisions */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.6 }}
           className="mb-16"
         >
           <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
@@ -228,7 +227,7 @@ export default function GovernancePage() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 0.8 }}
           className="bg-gradient-to-br from-hood-50 to-beam-50 rounded-2xl border border-hood-200 p-8 text-center"
         >
           <Shield className="w-16 h-16 text-hood-600 mx-auto mb-6" />

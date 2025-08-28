@@ -75,6 +75,8 @@ export default function CityPage() {
   const [showPaymentForm, setShowPaymentForm] = useState(false)
   const [selectedAmount, setSelectedAmount] = useState(0)
   const [isBuildDropdownOpen, setIsBuildDropdownOpen] = useState(false)
+  const [selectedEquipment, setSelectedEquipment] = useState<any>(null)
+  const [showEquipmentDonation, setShowEquipmentDonation] = useState(false)
 
   // Close build dropdown when clicking outside
   useEffect(() => {
@@ -216,15 +218,18 @@ export default function CityPage() {
                   
                   {/* Dropdown cards */}
                   <div className="absolute right-0 mt-2 w-80 space-y-3 z-50">
-                    <a 
-                      href="/governance"
-                      className="block w-full bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
+                    <button 
+                      onClick={() => {
+                        setIsBuildDropdownOpen(false)
+                        window.location.href = '/governance'
+                      }}
+                      className="block w-full text-left bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
                       style={{ fontFamily: 'sans-serif' }}
                     >
-                                              <div className="flex items-start space-x-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white font-bold text-lg">1</span>
-                          </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-bold text-lg">1</span>
+                        </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-white mb-2">Governance</h3>
                           <p className="text-gray-300 leading-relaxed">
@@ -232,35 +237,43 @@ export default function CityPage() {
                           </p>
                         </div>
                       </div>
-                    </a>
+                    </button>
                     
-                                        <a 
-                      href="/contact"
-                      className="block w-full bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
+                    <button 
+                      onClick={() => {
+                        setIsBuildDropdownOpen(false)
+                        window.location.href = '/contact'
+                      }}
+                      className="block w-full text-left bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
                       style={{ fontFamily: 'sans-serif' }}
                     >
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-bold text-lg">2</span>
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2">Projects</h3>
-                          <p className="text-gray-300 leading-relaxed">
-                            Explore ongoing community projects and initiatives
-                          </p>
+                      <div className="text-left">
+                        <div className="flex items-start space-x-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white font-bold text-lg">2</span>
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-white mb-2">Projects</h3>
+                            <p className="text-gray-300 leading-relaxed">
+                              Explore ongoing community projects and initiatives
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </a>
+                    </button>
                     
-                                        <a 
-                      href="/contact"
-                      className="block w-full bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
+                    <button 
+                      onClick={() => {
+                        setIsBuildDropdownOpen(false)
+                        window.location.href = '/contact'
+                      }}
+                      className="block w-full text-left bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
                       style={{ fontFamily: 'sans-serif' }}
                     >
                       <div className="flex items-start space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-bold text-lg">3</span>
-                        </div>
+                            <span className="text-white font-bold text-lg">3</span>
+                          </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-white mb-2">Community</h3>
                           <p className="text-gray-300 leading-relaxed">
@@ -268,7 +281,7 @@ export default function CityPage() {
                           </p>
                         </div>
                       </div>
-                    </a>
+                    </button>
                   </div>
                 </>
               )}
@@ -419,14 +432,29 @@ export default function CityPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column - Scrollable Equipment List */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
-                    Equipment & Real Estate Needs
-                  </h3>
+                  {/* Donor Blurb */}
+                  <div className="bg-black text-white rounded-2xl p-6 mb-6" style={{
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2)',
+                    transform: 'translateY(0)',
+                    transition: 'all 0.2s ease'
+                  }}>
+                    <p className="text-lg font-semibold text-white mb-2" style={{ fontFamily: 'sans-serif' }}>
+                      As a donor, these are the ways you can help.
+                    </p>
+                    <p className="text-sm text-gray-200" style={{ fontFamily: 'sans-serif' }}>
+                      Click on any item below to contribute to specific equipment or facility needs.
+                    </p>
+                  </div>
+                  
                   <div className="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                     {selectedCategory.equipment.map((item, index) => (
                       <div 
                         key={index} 
-                        className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+                        onClick={() => {
+                          setSelectedEquipment(item)
+                          setShowEquipmentDonation(true)
+                        }}
+                        className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer hover:border-blue-300 hover:bg-blue-50"
                         style={{ fontFamily: 'sans-serif' }}
                       >
                         {/* Item Header */}
@@ -466,44 +494,65 @@ export default function CityPage() {
                             </span>
                           )}
                         </div>
+                        
+                        {/* Click Indicator */}
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-blue-600 font-medium">Click to donate</span>
+                            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Right Column - Picture Card with Service Buttons */}
+                {/* Right Column - Welcome Section with Progress Bar and Video */}
                 <div className="space-y-6">
-                  {/* Picture Card */}
-                  <div className="relative">
-                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-6 border border-gray-200 shadow-sm">
-                      <div className="text-center mb-4">
-                        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-3 flex items-center justify-center">
-                          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                          </svg>
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{selectedCategory.title}</h3>
-                        <p className="text-gray-600 text-sm">{selectedCategory.subtitle}</p>
+                  {/* Welcome Section */}
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200 shadow-sm">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
+                      Welcome to {selectedCategory.title}
+                    </h3>
+                    <p className="text-gray-700 leading-relaxed mb-6" style={{ fontFamily: 'sans-serif' }}>
+                      This is where we can work together as a community — whether by donating, participating, or supporting local services.
+                    </p>
+                    
+                    {/* Progress Bar Section */}
+                    <div className="mb-6">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-sm font-medium text-gray-700">Equipment & Real Estate Progress</span>
+                        <span className="text-sm font-semibold text-blue-600">
+                          {Math.round(selectedCategory.equipment.reduce((acc, item) => acc + item.progress, 0) / selectedCategory.equipment.length)}%
+                        </span>
                       </div>
-                      
-                      {/* Service Buttons Overlay */}
-                      <div className="grid grid-cols-2 gap-3">
-                        {selectedCategory.services.map((service, index) => (
-                          <button
-                            key={index}
-                            className="group relative bg-white hover:bg-blue-50 rounded-xl p-3 border border-gray-200 transition-all duration-200 hover:border-blue-300 hover:shadow-md"
-                          >
-                            <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">
-                              {service}
-                            </span>
-                            {/* Hover Popup */}
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-blue-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto whitespace-nowrap z-10">
-                              Click to learn more about {service}
-                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-blue-600"></div>
-                            </div>
-                          </button>
-                        ))}
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className="bg-gradient-to-r from-blue-400 to-blue-500 h-3 rounded-full transition-all duration-300"
+                          style={{ 
+                            width: `${Math.min(100, Math.round(selectedCategory.equipment.reduce((acc, item) => acc + item.progress, 0) / selectedCategory.equipment.length))}%` 
+                          }}
+                        ></div>
                       </div>
+                      <p className="text-xs text-gray-600 mt-2" style={{ fontFamily: 'sans-serif' }}>
+                        Once 90% of equipment and real estate needs are met, a work order will be submitted for the community.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Video Placeholder */}
+                  <div className="bg-gray-900 rounded-2xl p-6 text-center">
+                    <div className="w-16 h-16 bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-lg font-medium text-white mb-2">Welcome Video</h4>
+                    <p className="text-gray-400 text-sm mb-4">Video placeholder for {selectedCategory.title}</p>
+                    <div className="w-full h-32 bg-gray-800 rounded-lg border-2 border-dashed border-gray-600 flex items-center justify-center">
+                      <span className="text-gray-500 text-sm">Video content will be added here</span>
                     </div>
                   </div>
 
@@ -671,6 +720,132 @@ export default function CityPage() {
                   </svg>
                 </button>
               </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Equipment Donation Modal */}
+      {showEquipmentDonation && selectedEquipment && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6"
+          >
+            {/* Modal Header */}
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-2xl font-medium text-gray-900 mb-2" style={{ fontFamily: 'sans-serif' }}>
+                  Support {selectedEquipment.name}
+                </h3>
+                <p className="text-gray-600" style={{ fontFamily: 'sans-serif' }}>
+                  Help fund this specific equipment or facility need
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowEquipmentDonation(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Equipment Details */}
+            <div className="bg-gray-50 rounded-xl p-4 mb-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">Target Amount</p>
+                  <p className="text-xl font-bold text-gray-900">${selectedEquipment.target.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Current Progress</p>
+                  <p className="text-xl font-bold text-blue-600">{selectedEquipment.progress}%</p>
+                </div>
+              </div>
+              
+              {/* Progress Bar */}
+              <div className="mt-4">
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-blue-400 to-blue-500 h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${selectedEquipment.progress}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  ${Math.round((selectedEquipment.progress / 100) * selectedEquipment.target).toLocaleString()} of ${selectedEquipment.target.toLocaleString()} raised
+                </p>
+              </div>
+            </div>
+
+            {/* Donation Options */}
+            <div className="space-y-4 mb-6">
+              <h4 className="text-lg font-medium text-gray-900" style={{ fontFamily: 'sans-serif' }}>
+                Choose Your Donation Amount
+              </h4>
+              
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { amount: 25, label: 'Small' },
+                  { amount: 100, label: 'Medium' },
+                  { amount: 250, label: 'Large' }
+                ].map((option) => (
+                  <button
+                    key={option.amount}
+                    onClick={() => {
+                      setSelectedAmount(option.amount)
+                      setShowEquipmentDonation(false)
+                      setShowPaymentForm(true)
+                    }}
+                    className="p-4 border-2 border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 text-center"
+                  >
+                    <div className="text-2xl font-bold text-gray-900">${option.amount}</div>
+                    <div className="text-sm text-gray-600">{option.label}</div>
+                  </button>
+                ))}
+              </div>
+              
+              <button
+                onClick={() => {
+                  setShowEquipmentDonation(false)
+                  setShowCustomAmount(true)
+                }}
+                className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 text-center"
+              >
+                <div className="text-lg font-medium text-blue-600">Custom Amount</div>
+                <div className="text-sm text-gray-600">Enter your own donation amount</div>
+              </button>
+            </div>
+
+            {/* Quick Donate Button */}
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  setShowEquipmentDonation(false)
+                  setShowCustomAmount(true)
+                }}
+                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                Custom Amount
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedAmount(100)
+                  setShowEquipmentDonation(false)
+                  setShowPaymentForm(true)
+                }}
+                className="flex-1 bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                <span>Quick Donate $100</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </motion.div>
         </div>
