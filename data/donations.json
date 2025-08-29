@@ -1,0 +1,98 @@
+{
+  "equipment": [
+    {
+      "id": "1",
+      "name": "Lawnmower",
+      "target": 300,
+      "progress": 100,
+      "funded": true,
+      "category": "Environment & Green",
+      "city": "orlando",
+      "description": "Professional lawnmower for community garden maintenance",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "name": "Storage Shed",
+      "target": 1200,
+      "progress": 45,
+      "funded": false,
+      "category": "Environment & Green",
+      "city": "orlando",
+      "description": "Secure storage for gardening tools and equipment",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "name": "Garden Tools",
+      "target": 400,
+      "progress": 75,
+      "funded": false,
+      "category": "Environment & Green",
+      "city": "orlando",
+      "description": "Complete set of professional gardening tools",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "name": "Classroom Rental",
+      "target": 800,
+      "progress": 100,
+      "funded": true,
+      "category": "Education & Skills",
+      "city": "orlando",
+      "description": "Monthly rental for community education classes",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "5",
+      "name": "Laptops",
+      "target": 1200,
+      "progress": 45,
+      "funded": false,
+      "category": "Education & Skills",
+      "city": "orlando",
+      "description": "5 laptops for computer literacy classes",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "name": "Study Materials",
+      "target": 300,
+      "progress": 80,
+      "funded": false,
+      "category": "Education & Skills",
+      "city": "orlando",
+      "description": "Textbooks and learning resources for students",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "name": "Environment & Green",
+      "description": "Maintaining and improving our local environment"
+    },
+    {
+      "id": "2",
+      "name": "Education & Skills",
+      "description": "Supporting educational initiatives in the community"
+    },
+    {
+      "id": "3",
+      "name": "Healthcare",
+      "description": "Providing healthcare services to residents"
+    },
+    {
+      "id": "4",
+      "name": "Community & Care",
+      "description": "Building stronger community connections"
+    },
+    {
+      "id": "5",
+      "name": "Transportation & Repair",
+      "description": "Supporting transportation and repair needs"
+    }
+  ],
+  "donations": []
+}

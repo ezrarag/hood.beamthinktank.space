@@ -3,16 +3,21 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import LoginModal from '@/components/auth/LoginModal'
+import OnboardingModal from '@/components/auth/OnboardingModal'
 
 // FAQ Item Component
-const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  
+const FAQItem = ({ question, answer, isOpen, onToggle }: { 
+  question: string; 
+  answer: string; 
+  isOpen: boolean;
+  onToggle: () => void;
+}) => {
   return (
     <motion.div 
       className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden cursor-pointer"
       style={{ fontFamily: 'sans-serif' }}
-      onClick={() => setIsOpen(!isOpen)}
+      onClick={onToggle}
     >
       {/* Question Header */}
       <div className="p-4 flex items-center justify-between">
@@ -93,6 +98,39 @@ const handleStripePayment = async (categoryId: number, categoryName: string, amo
   }
 }
 
+// Subscription checkout handler
+const handleSubscriptionCheckout = async () => {
+  try {
+    // Create Stripe checkout session for subscription
+    const response = await fetch('/api/create-subscription-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        city: 'home',
+        successUrl: `${window.location.origin}/dashboard`,
+        cancelUrl: `${window.location.origin}`,
+      }),
+    })
+
+    const { sessionId } = await response.json()
+    
+    // Redirect to Stripe Checkout
+    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+    if (stripe) {
+      const { error } = await stripe.redirectToCheckout({ sessionId })
+      if (error) {
+        console.error('Stripe error:', error)
+        alert('There was an error processing your subscription. Please try again.')
+      }
+    }
+  } catch (error) {
+    console.error('Subscription error:', error)
+    alert('There was an error processing your subscription. Please try again.')
+  }
+}
+
 // Load Stripe
 const loadStripe = async (publishableKey: string) => {
   if (typeof window !== "undefined") {
@@ -110,6 +148,9 @@ export default function HomePage() {
   const [isDetecting, setIsDetecting] = useState(true)
   const [locationDenied, setLocationDenied] = useState(false)
   const [isBlurred, setIsBlurred] = useState(false)
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null)
 
   // Function to create URL-safe city slug
   const createCitySlug = (cityName: string) => {
@@ -264,126 +305,57 @@ export default function HomePage() {
               </h1>
             </div>
 
-            {/* CTA Button with Dropdown */}
-            <div className="relative">
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-8">
+              {userCity ? (
+                <button 
+                  onClick={() => router.push(`/${createCitySlug(userCity)}`)} 
+                  className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                  style={{ fontFamily: 'sans-serif' }}
+                >
+                  {userCity}
+                </button>
+              ) : (
+                <button 
+                  onClick={handleEnableLocation} 
+                  className="text-sm font-light text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                  style={{ fontFamily: 'sans-serif' }}
+                >
+                  Enable Location
+                </button>
+              )}
+              
               <button 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="text-lg font-light text-gray-900 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                onClick={() => router.push('/governance')}
+                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
                 style={{ fontFamily: 'sans-serif' }}
               >
-                Menu
+                About
               </button>
               
-              {/* Full Screen Modal */}
-              {isDropdownOpen && (
-                <>
-                  {/* Full screen modal overlay */}
-                  <div className="fixed inset-0 bg-white z-50 flex flex-col">
-                    {/* Modal Header */}
-                    <div className="flex justify-between items-center p-8 border-b border-gray-200">
-                      <h2 className="text-2xl font-light text-gray-900" style={{ fontFamily: 'sans-serif' }}>
-                        Navigation Menu
-                      </h2>
-                      <button 
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                      >
-                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    
-                    {/* Modal Content */}
-                    <div className="flex-1 flex items-center justify-center p-8">
-                      <div className="max-w-4xl w-full space-y-8">
-                        {userCity ? (
-                          <button 
-                            onClick={() => {
-                              setIsDropdownOpen(false)
-                              router.push(`/${createCitySlug(userCity)}`)
-                            }}
-                            className="block w-full text-left bg-gray-50 hover:bg-gray-100 rounded-2xl p-8 transition-all duration-200 transform hover:scale-[1.02] shadow-lg border border-gray-200 cursor-pointer"
-                            style={{ fontFamily: 'sans-serif' }}
-                          >
-                            <div className="flex items-start space-x-6">
-                              <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span className="text-white font-bold text-2xl">1</span>
-                              </div>
-                              <div className="flex-1">
-                                <h3 className="text-3xl font-light text-gray-900 mb-4">{userCity}</h3>
-                                <p className="text-xl text-gray-600 leading-relaxed">
-                                  Explore services and community initiatives in your neighborhood
-                                </p>
-                              </div>
-                            </div>
-                          </button>
-                        ) : (
-                          <button 
-                            onClick={handleEnableLocation}
-                            className="block w-full text-left bg-gray-50 hover:bg-gray-100 rounded-2xl p-8 transition-all duration-200 transform hover:scale-[1.02] shadow-lg border border-gray-200"
-                            style={{ fontFamily: 'sans-serif' }}
-                          >
-                            <div className="flex items-start space-x-6">
-                              <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span className="text-white font-bold text-2xl">1</span>
-                              </div>
-                              <div className="flex-1">
-                                <h3 className="text-3xl font-light text-gray-900 mb-4">Enable Location</h3>
-                                <p className="text-xl text-gray-600 leading-relaxed">
-                                  Allow location access to find services in your area
-                                </p>
-                              </div>
-                            </div>
-                          </button>
-                        )}
-                        
-                        <button 
-                          onClick={() => {
-                            setIsDropdownOpen(false)
-                            router.push('/governance')
-                          }}
-                          className="block w-full text-left bg-gray-50 hover:bg-gray-100 rounded-2xl p-8 transition-all duration-200 transform hover:scale-[1.02] shadow-lg border border-gray-200 cursor-pointer"
-                          style={{ fontFamily: 'sans-serif' }}
-                        >
-                          <div className="flex items-start space-x-6">
-                            <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                              <span className="text-white font-bold text-2xl">2</span>
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="text-3xl font-light text-gray-900 mb-4">About</h3>
-                              <p className="text-xl text-gray-600 leading-relaxed">
-                                Learn about our student-driven governance model and community structure
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                        
-                        <button 
-                          onClick={() => {
-                            setIsDropdownOpen(false)
-                            router.push('/contact')
-                          }}
-                          className="block w-full text-left bg-gray-50 hover:bg-gray-100 rounded-2xl p-8 transition-all duration-200 transform hover:scale-[1.02] shadow-lg border border-gray-200 cursor-pointer"
-                          style={{ fontFamily: 'sans-serif' }}
-                        >
-                          <div className="flex items-start space-x-6">
-                            <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                              <span className="text-white font-bold text-2xl">3</span>
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="text-3xl font-light text-gray-900 mb-4">Contact</h3>
-                              <p className="text-xl text-gray-600 leading-relaxed">
-                                Get in touch with our team for questions and support
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
+              <button 
+                onClick={() => router.push('/contact')}
+                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                Contact
+              </button>
+
+              <button 
+                onClick={() => setShowSubscriptionModal(true)}
+                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                Subscribe
+              </button>
+
+              <button 
+                onClick={() => setShowLoginModal(true)}
+                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                Login
+              </button>
             </div>
 
           </div>
@@ -412,23 +384,174 @@ export default function HomePage() {
             <FAQItem 
               question="Book a neighborhood cleaning service"
               answer="Schedule professional cleaning for your area. Our team handles everything from street cleanup to community garden maintenance. Available once your neighborhood reaches the cleaning tier."
+              isOpen={openFAQIndex === 0}
+              onToggle={() => setOpenFAQIndex(openFAQIndex === 0 ? null : 0)}
             />
             <FAQItem 
               question="Support neighborhood equipment needs"
               answer="Contribute to funding essential tools and equipment. From lawnmowers to community center supplies, every donation helps build a better neighborhood."
+              isOpen={openFAQIndex === 1}
+              onToggle={() => setOpenFAQIndex(openFAQIndex === 1 ? null : 1)}
             />
             <FAQItem 
-              question="Join community skill-sharing classes"
-              answer="Participate in workshops and classes offered by your neighbors. Learn new skills while building community connections. Classes unlock at the first donation tier."
+              question="What do I get with a Community Subscription?"
+              answer="As a subscriber, you unlock a full package of benefits for $75/month. This includes 1 domestic round-trip flight, 6 hotel nights, 1 meal per day, 6 Uber rides, and a monthly health exam. These perks are designed to support your lifestyle while contributing to your neighborhood's growth."
+              isOpen={openFAQIndex === 2}
+              onToggle={() => setOpenFAQIndex(openFAQIndex === 2 ? null : 2)}
             />
             <FAQItem 
               question="Access food assistance programs"
               answer="Support and access community food banks, meal programs, and grocery assistance. This service becomes available when your neighborhood reaches the food tier."
+              isOpen={openFAQIndex === 3}
+              onToggle={() => setOpenFAQIndex(openFAQIndex === 3 ? null : 3)}
             />
           </div>
         </div>
       </main>
 
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => {
+          // Redirect to dashboard after successful login
+          router.push('/dashboard')
+        }}
+      />
+
+      {/* Subscription Modal */}
+      {showSubscriptionModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowSubscriptionModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-8">
+              <button
+                onClick={() => setShowSubscriptionModal(false)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <h3 className="text-3xl font-medium text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
+                Premium Neighborhood Subscription
+              </h3>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto" style={{ fontFamily: 'sans-serif' }}>
+                Unlock exclusive benefits and support your community with our premium subscription package
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8 mb-8">
+              {/* Benefits Description */}
+              <div className="space-y-4">
+                <h4 className="text-xl font-semibold text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
+                  What's Included:
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Flight credits for community events</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Hotel accommodations</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Meal vouchers</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Uber ride credits</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Health examination coverage</span>
+                  </div>
+                </div>
+                <div className="mt-6 p-4 bg-blue-50 rounded-xl">
+                  <p className="text-sm text-blue-800" style={{ fontFamily: 'sans-serif' }}>
+                    <strong>Price:</strong> $75/month
+                  </p>
+                </div>
+              </div>
+
+              {/* Video Player */}
+              <div className="space-y-4">
+                <h4 className="text-xl font-semibold text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
+                  See What's Included:
+                </h4>
+                <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">
+                  <div className="text-center">
+                    <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-gray-500 text-sm" style={{ fontFamily: 'sans-serif' }}>
+                      Video placeholder for subscription benefits
+                    </p>
+                    <p className="text-gray-400 text-xs" style={{ fontFamily: 'sans-serif' }}>
+                      YouTube/Vimeo integration coming soon
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Subscribe Button */}
+            <div className="text-center">
+              <button
+                onClick={handleSubscriptionCheckout}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                <span className="text-lg">Subscribe Now - $75/month</span>
+                <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <p className="text-sm text-gray-500 mt-3" style={{ fontFamily: 'sans-serif' }}>
+                Cancel anytime • No setup fees
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Onboarding Modal */}
+      <OnboardingModal
+        isOpen={false} // This will be controlled by the dashboard
+        onClose={() => {}}
+        onComplete={() => {}}
+        userId=""
+      />
     </div>
   )
 }

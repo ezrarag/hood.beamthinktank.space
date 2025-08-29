@@ -77,6 +77,15 @@ export default function CityPage() {
   const [isBuildDropdownOpen, setIsBuildDropdownOpen] = useState(false)
   const [selectedEquipment, setSelectedEquipment] = useState<any>(null)
   const [showEquipmentDonation, setShowEquipmentDonation] = useState(false)
+  const [showWorkOrderModal, setShowWorkOrderModal] = useState(false)
+  const [workOrderForm, setWorkOrderForm] = useState({
+    workOrderType: '',
+    dateTime: '',
+    phoneNumber: '',
+    message: ''
+  })
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false)
+  const [currentCardIndex, setCurrentCardIndex] = useState(0)
 
   // Close build dropdown when clicking outside
   useEffect(() => {
@@ -91,6 +100,58 @@ export default function CityPage() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [isBuildDropdownOpen])
+
+  // Handle work order form submission
+  const handleWorkOrderSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Here you would typically send the work order to your backend
+    console.log('Work Order Submitted:', {
+      category: selectedCategory?.title,
+      city: city,
+      ...workOrderForm
+    })
+    
+    // Reset form and close modal
+    setWorkOrderForm({ workOrderType: '', dateTime: '', phoneNumber: '', message: '' })
+    setShowWorkOrderModal(false)
+    
+    // Show success message (you can implement this as needed)
+    alert('Work order submitted successfully! We will contact you soon.')
+  }
+
+  // Handle subscription checkout
+  const handleSubscriptionCheckout = async () => {
+    try {
+      // Create Stripe checkout session for subscription
+      const response = await fetch('/api/create-subscription-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          city: city,
+          successUrl: `${window.location.origin}/dashboard`,
+          cancelUrl: `${window.location.origin}/${city}`,
+        }),
+      })
+
+      const { sessionId } = await response.json()
+      
+      // Redirect to Stripe Checkout
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+      if (stripe) {
+        const { error } = await stripe.redirectToCheckout({ sessionId })
+        if (error) {
+          console.error('Stripe error:', error)
+          alert('There was an error processing your subscription. Please try again.')
+        }
+      }
+    } catch (error) {
+      console.error('Subscription error:', error)
+      alert('There was an error processing your subscription. Please try again.')
+    }
+  }
 
   // Mock category data - represents different areas where neighborhood can donate for services
   const categories = [
@@ -172,119 +233,41 @@ export default function CityPage() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#FEFEE8' }}>
       {/* Header - No border */}
-      <header className="px-20 py-8" style={{ backgroundColor: '#FFFFFF' }}>
+      <header className="px-20 py-8" style={{ backgroundColor: '#FEFEE8', height: '88px' }}>
         <div className="max-w-15xl mx-auto">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center h-full">
             {/* Logo/Title */}
             <div className="flex items-center">
               <h1 className="text-2xl font-light text-gray-900" style={{ fontFamily: 'sans-serif' }}>Neighborhood</h1>
             </div>
 
-
-
-            {/* CTA Button with Dropdown */}
-            <div className="relative">
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-8">
               <button 
-                onClick={() => setIsBuildDropdownOpen(!isBuildDropdownOpen)}
-                className="bg-black hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-2xl transition-colors duration-200 flex items-center gap-2" 
-                style={{
-                  fontFamily: 'sans-serif',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2)',
-                  transform: 'translateY(0)',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)'
-                  e.currentTarget.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.3)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2)'
-                }}
+                onClick={() => window.location.href = '/governance'}
+                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                style={{ fontFamily: 'sans-serif' }}
               >
-                <span>Build</span>
-                <svg className={`w-4 h-4 transition-transform duration-200 ${isBuildDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                About
               </button>
               
-              {/* Build Dropdown Menu */}
-              {isBuildDropdownOpen && (
-                <>
-                  {/* Blur overlay */}
-                  <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" onClick={() => setIsBuildDropdownOpen(false)} />
-                  
-                  {/* Dropdown cards */}
-                  <div className="absolute right-0 mt-2 w-80 space-y-3 z-50">
-                    <button 
-                      onClick={() => {
-                        setIsBuildDropdownOpen(false)
-                        window.location.href = '/governance'
-                      }}
-                      className="block w-full text-left bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
-                      style={{ fontFamily: 'sans-serif' }}
-                    >
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-bold text-lg">1</span>
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2">Governance</h3>
-                          <p className="text-gray-300 leading-relaxed">
-                            Learn about our student-driven governance model and decision-making process
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                    
-                    <button 
-                      onClick={() => {
-                        setIsBuildDropdownOpen(false)
-                        window.location.href = '/contact'
-                      }}
-                      className="block w-full text-left bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
-                      style={{ fontFamily: 'sans-serif' }}
-                    >
-                      <div className="text-left">
-                        <div className="flex items-start space-x-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white font-bold text-lg">2</span>
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white mb-2">Projects</h3>
-                            <p className="text-gray-300 leading-relaxed">
-                              Explore ongoing community projects and initiatives
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                    
-                    <button 
-                      onClick={() => {
-                        setIsBuildDropdownOpen(false)
-                        window.location.href = '/contact'
-                      }}
-                      className="block w-full text-left bg-gray-800 hover:bg-gray-700 rounded-2xl p-6 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-600 cursor-pointer"
-                      style={{ fontFamily: 'sans-serif' }}
-                    >
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white font-bold text-lg">3</span>
-                          </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2">Community</h3>
-                          <p className="text-gray-300 leading-relaxed">
-                            Connect with community members and get involved
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-                </>
-              )}
+              <button 
+                onClick={() => window.location.href = '/contact'}
+                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                Contact
+              </button>
+
+              <button 
+                onClick={() => setShowSubscriptionModal(true)}
+                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                Subscribe
+              </button>
             </div>
           </div>
         </div>
@@ -311,16 +294,16 @@ export default function CityPage() {
           transition={{ duration: 0.8 }}
           className="text-left mb-8 w-full max-w-7xl"
         >
-          <h2 className="text-5xl font-light text-gray-900 mb-2" style={{ fontFamily: 'sans-serif' }}>
-            {city.charAt(0).toUpperCase() + city.slice(1)} Services
+          <h2 className="text-2xl font-light text-gray-900 mb-1" style={{ fontFamily: 'sans-serif' }}>
+            {city.charAt(0).toUpperCase() + city.slice(1)} neighbors join in strengthening the community.
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl font-light" style={{ fontFamily: 'sans-serif' }}>
-            Support your community by donating to these service categories
+          <p className="text-2xl font-light text-gray-600 max-w-2xl" style={{ fontFamily: 'sans-serif' }}>
+          Choose a service to support today.
           </p>
         </motion.div>
 
-        {/* Services Grid - 3-column Layout */}
-        <div className="grid grid-cols-3 gap-4 w-full max-w-7xl">
+        {/* Services Grid - 2-column Layout */}
+        <div className="grid grid-cols-2 gap-6 w-full max-w-7xl">
           {categories.map((category, index) => (
             <motion.div
               key={category.id}
@@ -369,7 +352,7 @@ export default function CityPage() {
                       setSelectedCategory(category)
                       setIsModalOpen(true)
                     }}
-                    className="px-4 py-2 text-white text-sm rounded-full border border-white/40 font-light hover:bg-white/10 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 text-white text-sm rounded-lg border border-white/40 font-light hover:bg-white/10 transition-colors flex items-center gap-2"
                     style={{
                       fontFamily: 'Instrument Sans, sans-serif',
                       backgroundColor: 'rgba(255, 255, 255, 0.15)',
@@ -509,51 +492,178 @@ export default function CityPage() {
                   </div>
                 </div>
 
-                {/* Right Column - Welcome Section with Progress Bar and Video */}
-                <div className="space-y-6">
-                  {/* Welcome Section */}
-                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200 shadow-sm">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
-                      Welcome to {selectedCategory.title}
-                    </h3>
-                    <p className="text-gray-700 leading-relaxed mb-6" style={{ fontFamily: 'sans-serif' }}>
-                      This is where we can work together as a community — whether by donating, participating, or supporting local services.
-                    </p>
-                    
-                    {/* Progress Bar Section */}
-                    <div className="mb-6">
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-sm font-medium text-gray-700">Equipment & Real Estate Progress</span>
-                        <span className="text-sm font-semibold text-blue-600">
-                          {Math.round(selectedCategory.equipment.reduce((acc, item) => acc + item.progress, 0) / selectedCategory.equipment.length)}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div 
-                          className="bg-gradient-to-r from-blue-400 to-blue-500 h-3 rounded-full transition-all duration-300"
-                          style={{ 
-                            width: `${Math.min(100, Math.round(selectedCategory.equipment.reduce((acc, item) => acc + item.progress, 0) / selectedCategory.equipment.length))}%` 
-                          }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-gray-600 mt-2" style={{ fontFamily: 'sans-serif' }}>
-                        Once 90% of equipment and real estate needs are met, a work order will be submitted for the community.
-                      </p>
-                    </div>
+                {/* Right Column - Card Slider */}
+                <div className="space-y-4">
+                  {/* Card Display Area */}
+                  <div className="relative">
+                    {/* Card 1: Total Amount */}
+                    {currentCardIndex === 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 shadow-lg"
+                      >
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                            </svg>
+                          </div>
+                          <h3 className="text-2xl font-bold text-blue-900 mb-2">Total Raised</h3>
+                          <p className="text-4xl font-bold text-blue-700 mb-2">
+                            ${selectedCategory.equipment.reduce((acc, item) => 
+                              acc + Math.round((item.progress / 100) * item.target), 0
+                            ).toLocaleString()}
+                          </p>
+                          <p className="text-sm text-blue-600">
+                            of ${selectedCategory.equipment.reduce((acc, item) => acc + item.target, 0).toLocaleString()} goal
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Card 2: Work Orders */}
+                    {currentCardIndex === 1 && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border border-green-200 shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                        onClick={() => setShowWorkOrderModal(true)}
+                      >
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <h3 className="text-2xl font-bold text-green-900 mb-2">Work Orders</h3>
+                          <p className="text-lg text-green-700 mb-2">
+                            {selectedCategory.equipment.filter(item => item.progress >= 90).length} Ready
+                          </p>
+                          <p className="text-sm text-green-600">
+                            {selectedCategory.equipment.filter(item => item.progress < 90).length} Pending
+                          </p>
+                          <div className="mt-4">
+                            <div className="w-full bg-green-200 rounded-full h-2">
+                              <div 
+                                className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                                style={{ 
+                                  width: `${Math.min(100, Math.round(selectedCategory.equipment.reduce((acc, item) => acc + item.progress, 0) / selectedCategory.equipment.length))}%` 
+                                }}
+                              ></div>
+                            </div>
+                            <p className="text-xs text-green-600 mt-1">
+                              {Math.round(selectedCategory.equipment.reduce((acc, item) => acc + item.progress, 0) / selectedCategory.equipment.length)}% Complete
+                            </p>
+                          </div>
+                          <p className="text-xs text-green-600 mt-2 font-medium">Click to submit work order</p>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Card 3: Equipment Status */}
+                    {currentCardIndex === 2 && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 border border-purple-200 shadow-lg"
+                      >
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                          </div>
+                          <h3 className="text-2xl font-bold text-purple-900 mb-2">Equipment Status</h3>
+                          <div className="space-y-2">
+                            {selectedCategory.equipment.map((item, index) => (
+                              <div key={index} className="flex items-center justify-between p-2 bg-white/50 rounded-lg">
+                                <span className="text-sm text-purple-800">{item.name}</span>
+                                <span className={`text-sm font-medium ${
+                                  item.funded ? 'text-green-600' : 'text-orange-600'
+                                }`}>
+                                  {item.funded ? 'Funded' : `${item.progress}%`}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Card 4: Community Impact */}
+                    {currentCardIndex === 3 && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.3 }}
+                        className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 border border-orange-200 shadow-lg"
+                      >
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                          </div>
+                          <h3 className="text-2xl font-bold text-orange-900 mb-2">Community Impact</h3>
+                          <div className="space-y-3">
+                            <div className="text-center">
+                              <p className="text-3xl font-bold text-orange-700">
+                                {selectedCategory.equipment.filter(item => item.funded).length}
+                              </p>
+                              <p className="text-sm text-orange-600">Items Funded</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-3xl font-bold text-orange-700">
+                                {Math.round(selectedCategory.equipment.reduce((acc, item) => acc + item.progress, 0) / selectedCategory.equipment.length)}%
+                              </p>
+                              <p className="text-sm text-orange-600">Overall Progress</p>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
 
-                  {/* Video Placeholder */}
-                  <div className="bg-gray-900 rounded-2xl p-6 text-center">
-                    <div className="w-16 h-16 bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  {/* Navigation Controls */}
+                  <div className="flex items-center justify-center space-x-2">
+                    <button
+                      onClick={() => setCurrentCardIndex(prev => prev === 0 ? 3 : prev - 1)}
+                      className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    >
+                      <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                       </svg>
+                    </button>
+                    
+                    {/* Dots Indicator */}
+                    <div className="flex space-x-1">
+                      {[0, 1, 2, 3].map((index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentCardIndex(index)}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            currentCardIndex === index ? 'bg-blue-600' : 'bg-gray-300'
+                          }`}
+                        />
+                      ))}
                     </div>
-                    <h4 className="text-lg font-medium text-white mb-2">Welcome Video</h4>
-                    <p className="text-gray-400 text-sm mb-4">Video placeholder for {selectedCategory.title}</p>
-                    <div className="w-full h-32 bg-gray-800 rounded-lg border-2 border-dashed border-gray-600 flex items-center justify-center">
-                      <span className="text-gray-500 text-sm">Video content will be added here</span>
-                    </div>
+                    
+                    <button
+                      onClick={() => setCurrentCardIndex(prev => prev === 3 ? 0 : prev + 1)}
+                      className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    >
+                      <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
                   </div>
 
                   {/* Donate Now Button */}
@@ -846,6 +956,239 @@ export default function CityPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Work Order Modal */}
+      {showWorkOrderModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowWorkOrderModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-6">
+              <button
+                onClick={() => setShowWorkOrderModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <h3 className="text-2xl font-medium text-gray-900 mb-2" style={{ fontFamily: 'sans-serif' }}>
+                Submit Work Order
+              </h3>
+              <p className="text-gray-600" style={{ fontFamily: 'sans-serif' }}>
+                {selectedCategory?.title} • {city.charAt(0).toUpperCase() + city.slice(1)}
+              </p>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault()
+              // Handle work order submission logic here
+              alert('Work order submitted successfully! We will contact you soon.')
+              setShowWorkOrderModal(false)
+            }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'sans-serif' }}>
+                  Work Order Type *
+                </label>
+                <select
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={{ fontFamily: 'sans-serif' }}
+                >
+                  <option value="">Select a type</option>
+                  <option value="repair">Repair</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="installation">Installation</option>
+                  <option value="cleaning">Cleaning</option>
+                  <option value="inspection">Inspection</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'sans-serif' }}>
+                  Preferred Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={{ fontFamily: 'sans-serif' }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'sans-serif' }}>
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., +1 (555) 123-4567"
+                  style={{ fontFamily: 'sans-serif' }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'sans-serif' }}>
+                  Additional Details
+                </label>
+                <textarea
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Describe the work needed, any specific requirements, or additional information..."
+                  style={{ fontFamily: 'sans-serif' }}
+                />
+              </div>
+
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                  style={{ fontFamily: 'sans-serif' }}
+                >
+                  <span>Submit Work Order</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Subscription Modal */}
+      {showSubscriptionModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowSubscriptionModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-8">
+              <button
+                onClick={() => setShowSubscriptionModal(false)}
+                className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <h3 className="text-3xl font-medium text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
+                Premium Neighborhood Subscription
+              </h3>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto" style={{ fontFamily: 'sans-serif' }}>
+                Unlock exclusive benefits and support your community with our premium subscription package
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Benefits Description */}
+              <div className="space-y-4">
+                <h4 className="text-xl font-semibold text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
+                  What's Included:
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Flight credits for community events</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Hotel accommodations</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Meal vouchers</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Uber ride credits</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700" style={{ fontFamily: 'sans-serif' }}>Health examination coverage</span>
+                  </div>
+                </div>
+                <div className="mt-6 p-4 bg-blue-50 rounded-xl">
+                  <p className="text-sm text-blue-800" style={{ fontFamily: 'sans-serif' }}>
+                    <strong>Price:</strong> $75/month
+                  </p>
+                </div>
+              </div>
+
+              {/* Video Player */}
+              <div className="space-y-4">
+                <h4 className="text-xl font-semibold text-gray-900 mb-4" style={{ fontFamily: 'sans-serif' }}>
+                  See What's Included:
+                </h4>
+                <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">
+                  <div className="text-center">
+                    <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-gray-500 text-sm" style={{ fontFamily: 'sans-serif' }}>
+                      Video placeholder for subscription benefits
+                    </p>
+                    <p className="text-gray-400 text-xs" style={{ fontFamily: 'sans-serif' }}>
+                      YouTube/Vimeo integration coming soon
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Subscribe Button */}
+            <div className="text-center">
+              <button
+                onClick={handleSubscriptionCheckout}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                <span className="text-lg">Subscribe Now - $75/month</span>
+                <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <p className="text-sm text-gray-500 mt-3" style={{ fontFamily: 'sans-serif' }}>
+                Cancel anytime • No setup fees
+              </p>
             </div>
           </motion.div>
         </div>
