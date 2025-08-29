@@ -112,32 +112,14 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
 export const createOrUpdateUser = async (supabaseId: string, email: string, name?: string): Promise<User | null> => {
   try {
-    // TODO: Replace with actual Supabase user creation when package is installed
-    // const { data, error } = await supabase
-    //   .from('users')
-    //   .upsert([{ supabase_id: supabaseId, email, name }])
-    //   .select()
-    //   .single()
+    const { data, error } = await supabase
+      .from('users')
+      .upsert([{ supabase_id: supabaseId, email, name }])
+      .select()
+      .single()
     
-    // if (error) throw error
-    // return data
-    
-    // Mock user creation for development
-    const existingUser = Object.values(mockUsers).find(u => u.email === email)
-    if (existingUser) {
-      return existingUser
-    }
-    
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      supabase_id: supabaseId,
-      email,
-      name,
-      created_at: new Date().toISOString()
-    }
-    
-    mockUsers[email] = newUser
-    return newUser
+    if (error) throw error
+    return data
   } catch (error) {
     console.error('Error creating/updating user:', error)
     return null

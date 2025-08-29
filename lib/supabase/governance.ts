@@ -1,10 +1,9 @@
-// TODO: Install @supabase/supabase-js when disk space is available
-// import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 
-// Initialize Supabase client (commented out until package is installed)
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-// const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-// const supabase = createClient(supabaseUrl, supabaseKey)
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Temporary mock data until Supabase is properly configured
 const mockLeadershipData: { [city: string]: LeadershipMember[] } = {
@@ -284,18 +283,15 @@ export const addLeadershipMember = async (member: Omit<LeadershipMember, 'id' | 
 // Donation Activity Queries
 export const getDonationActivityByCity = async (city: string): Promise<DonationActivity[]> => {
   try {
-    // TODO: Replace with actual Supabase query when package is installed
-    // const { data, error } = await supabase
-    //   .from('donations')
-    //   .select('*')
-    //   .eq('city', city)
-    //   .order('created_at', { ascending: false })
-    //   .limit(50)
-    // if (error) throw error
-    // return data || []
+    const { data, error } = await supabase
+      .from('donations')
+      .select('*')
+      .eq('city', city)
+      .order('created_at', { ascending: false })
+      .limit(50)
     
-    // Temporary mock data
-    return mockDonationData[city] || []
+    if (error) throw error
+    return data || []
   } catch (error) {
     console.error('Error fetching donation activity:', error)
     return []
@@ -322,18 +318,15 @@ export const getSubscriptionActivityByCity = async (city: string): Promise<Donat
 // Governance Logs Queries
 export const getGovernanceLogsByCity = async (city: string): Promise<GovernanceLog[]> => {
   try {
-    // TODO: Replace with actual Supabase query when package is installed
-    // const { data, error } = await supabase
-    //   .from('governance_logs')
-    //   .select('*')
-    //   .eq('city', city)
-    //   .order('created_at', { ascending: false })
-    //   .limit(20)
-    // if (error) throw error
-    // return data || []
+    const { data, error } = await supabase
+      .from('governance_logs')
+      .select('*')
+      .eq('city', city)
+      .order('created_at', { ascending: false })
+      .limit(20)
     
-    // Temporary mock data
-    return mockGovernanceLogs[city] || []
+    if (error) throw error
+    return data || []
   } catch (error) {
     console.error('Error fetching governance logs:', error)
     return []

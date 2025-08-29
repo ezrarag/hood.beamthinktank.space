@@ -8,7 +8,7 @@ import {
   getDonationActivityByCity, 
   getGovernanceLogsByCity, 
   getTransparencyMetricsByCity,
-  hasGovernanceData,
+  hasGovernanceData as checkGovernanceData,
   submitVote,
   type LeadershipMember,
   type DonationActivity,
@@ -29,7 +29,7 @@ export default function GovernancePage() {
   const [transparencyMetrics, setTransparencyMetrics] = useState<TransparencyMetrics | null>(null)
   const [loading, setLoading] = useState(true)
   const [hasGovernanceData, setHasGovernanceData] = useState(false)
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null) // In real app, get from auth context
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined) // In real app, get from auth context
 
   useEffect(() => {
     fetchGovernanceData()
@@ -40,7 +40,7 @@ export default function GovernancePage() {
       setLoading(true)
       
       // Check if city has governance data
-      const hasData = await hasGovernanceData(city)
+      const hasData = await checkGovernanceData(city)
       setHasGovernanceData(hasData)
 
       if (hasData) {
