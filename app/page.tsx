@@ -151,6 +151,9 @@ export default function HomePage() {
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null)
+  const [bgImageUrl, setBgImageUrl] = useState<string>(
+    'https://firebasestorage.googleapis.com/v0/b/beam-orchestra-platform.firebasestorage.app/o/pexels-afroromanzo-4028878.jpg?alt=media&token=b95bbe32-cc29-4ff7-815a-3dd558efa561'
+  )
 
   // Function to create URL-safe city slug
   const createCitySlug = (cityName: string) => {
@@ -265,26 +268,47 @@ export default function HomePage() {
     return () => clearInterval(blurInterval)
   }, [])
 
+  useEffect(() => {
+    async function loadSiteMedia() {
+      try {
+        const res = await fetch('/api/admin/media')
+        if (res.ok) {
+          const data = await res.json()
+          if (data.backgroundUrl) {
+            setBgImageUrl(data.backgroundUrl)
+          }
+        }
+      } catch (err) {
+        console.warn('Failed fetching custom site background:', err)
+      }
+    }
+    loadSiteMedia()
+  }, [])
+
   return (
     <div className="h-screen bg-white relative overflow-hidden">
       {/* Background Image - Full viewport width */}
       <div className={`absolute inset-0 z-0 transition-all duration-1000 ${isBlurred ? 'blur-sm' : ''}`}>
         <img 
-          src="https://bqxetxzxveyfmnvjdime.supabase.co/storage/v1/object/public/citieslandingpage/pexels-burak-nane-846191728-31853609.jpg" 
+          src={bgImageUrl}
           alt="Neighbor Hood Community Background"
           className="w-full h-full object-cover bg-gray-100"
+          onError={(e) => {
+            // Graceful fallback to CSS background if remote URL fails
+            (e.currentTarget as HTMLElement).style.opacity = '0';
+          }}
         />
       </div>
 
-      {/* Header - Wider spacing to match content below */}
+      {/* Header - Mobile Responsive Layout */}
       <motion.header 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative z-20 px-4 sm:px-8 lg:px-20 py-8"
+        className="relative z-20 px-4 sm:px-8 lg:px-20 py-4 sm:py-8"
       >
         <div className="max-w-15xl mx-auto">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             {/* Logo/Title with City */}
             <div className="flex items-center">
               <h1 className="text-lg sm:text-xl lg:text-2xl font-light text-gray-900" style={{ fontFamily: 'sans-serif' }}>
@@ -306,11 +330,11 @@ export default function HomePage() {
             </div>
 
             {/* Navigation Links */}
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center flex-wrap gap-3 sm:gap-6 text-sm font-light text-gray-900">
               {userCity ? (
                 <button 
                   onClick={() => router.push(`/${createCitySlug(userCity)}`)} 
-                  className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                  className="hover:text-blue-600 transition-colors cursor-pointer py-1"
                   style={{ fontFamily: 'sans-serif' }}
                 >
                   {userCity}
@@ -318,7 +342,7 @@ export default function HomePage() {
               ) : (
                 <button 
                   onClick={handleEnableLocation} 
-                  className="text-sm font-light text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                  className="text-blue-600 hover:text-blue-800 underline cursor-pointer py-1"
                   style={{ fontFamily: 'sans-serif' }}
                 >
                   Enable Location
@@ -326,8 +350,24 @@ export default function HomePage() {
               )}
               
               <button 
+                onClick={() => router.push('/community')}
+                className="font-semibold text-emerald-700 hover:text-emerald-900 transition-colors cursor-pointer bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                Community Hub
+              </button>
+
+              <button 
+                onClick={() => router.push('/admin')}
+                className="font-semibold text-slate-800 hover:text-emerald-600 transition-colors cursor-pointer bg-slate-100 px-3 py-1 rounded-full border border-slate-300"
+                style={{ fontFamily: 'sans-serif' }}
+              >
+                Admin
+              </button>
+
+              <button 
                 onClick={() => router.push('/governance')}
-                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
                 style={{ fontFamily: 'sans-serif' }}
               >
                 About
@@ -335,7 +375,7 @@ export default function HomePage() {
               
               <button 
                 onClick={() => router.push('/contact')}
-                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
                 style={{ fontFamily: 'sans-serif' }}
               >
                 Contact
@@ -343,7 +383,7 @@ export default function HomePage() {
 
               <button 
                 onClick={() => setShowSubscriptionModal(true)}
-                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
                 style={{ fontFamily: 'sans-serif' }}
               >
                 Subscribe
@@ -351,7 +391,7 @@ export default function HomePage() {
 
               <button 
                 onClick={() => setShowLoginModal(true)}
-                className="text-sm font-light text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
                 style={{ fontFamily: 'sans-serif' }}
               >
                 Login

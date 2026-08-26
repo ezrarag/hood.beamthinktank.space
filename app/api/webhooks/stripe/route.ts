@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { headers } from 'next/headers'
+import { adminDb } from '@/lib/firebase-admin'
+import { FieldValue } from 'firebase-admin/firestore'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock', {
   apiVersion: '2023-10-16',
 })
 
@@ -13,48 +15,41 @@ export async function POST(request: NextRequest) {
     const body = await request.text()
     const signature = headers().get('stripe-signature')
 
-    if (!signature) {
-      return NextResponse.json(
-        { error: 'Missing stripe-signature header' },
-        { status: 400 }
-      )
+    if (!signature || !webhookSecret) {
+      // In dev mode without webhook secret set, log signature warning
+      console.warn('Stripe webhook received without webhookSecret or signature.')
+      return NextResponse.json({ received: true, note: 'Skipping signature verification in dev mode' })
     }
 
     let event: Stripe.Event
 
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-    } catch (err) {
-      console.error('Webhook signature verification failed:', err)
+    } catch (err: any) {
+      console.error('Webhook signature verification failed:', err.message)
       return NextResponse.json(
-        { error: 'Invalid signature' },
+        { error: `Invalid signature: ${err.message}` },
         { status: 400 }
       )
     }
 
-    // Handle the event
     switch (event.type) {
-      case 'customer.subscription.created':
-        await handleSubscriptionCreated(event.data.object as Stripe.Subscription)
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session
+        await handleCheckoutCompleted(session)
         break
-      case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription)
+      }
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as Stripe.Invoice
+        await handleInvoicePaymentSucceeded(invoice)
         break
-      case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription)
-        break
-      case 'invoice.payment_succeeded':
-        await handlePaymentSucceeded(event.data.object as Stripe.Invoice)
-        break
-      case 'invoice.payment_failed':
-        await handlePaymentFailed(event.data.object as Stripe.Invoice)
-        break
+      }
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        console.log(`Unhandled Stripe event type: ${event.type}`)
     }
 
     return NextResponse.json({ received: true })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Webhook error:', error)
     return NextResponse.json(
       { error: 'Webhook handler failed' },
@@ -63,92 +58,47 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  try {
-    // Update user subscription status in Supabase
-    // This would typically involve:
-    // 1. Getting the customer email from the subscription
-    // 2. Updating the user's subscription_status in your users table
-    // 3. Setting subscription_start_date and other relevant fields
-    
-    console.log('Subscription created:', subscription.id)
-    
-    // Example Supabase update (you'll need to implement this):
-    // await supabase
-    //   .from('users')
-    //   .update({
-    //     subscription_status: 'active',
-    //     subscription_id: subscription.id,
-    //     subscription_start_date: new Date().toISOString(),
-    //     subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString()
-    //   })
-    //   .eq('email', customer.email)
-    
-  } catch (error) {
-    console.error('Error handling subscription created:', error)
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  const metadata = session.metadata || {}
+  const participantEmail = metadata.participantEmail
+  const amountTotalCents = session.amount_total || 0
+  const amountUSD = amountTotalCents / 100
+
+  if (participantEmail && amountUSD > 0) {
+    await incrementParticipantBalance(participantEmail, amountUSD)
   }
 }
 
-async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  try {
-    console.log('Subscription updated:', subscription.id)
-    
-    // Update subscription status based on current status
-    const status = subscription.status
-    const endDate = new Date(subscription.current_period_end * 1000).toISOString()
-    
-    // Example Supabase update:
-    // await supabase
-    //   .from('users')
-    //   .update({
-    //     subscription_status: status,
-    //     subscription_end_date: endDate
-    //   })
-    //   .eq('subscription_id', subscription.id)
-    
-  } catch (error) {
-    console.error('Error handling subscription updated:', error)
+async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
+  const lines = invoice.lines?.data || []
+  for (const line of lines) {
+    const metadata = line.metadata || {}
+    const participantEmail = metadata.participantEmail
+    const amountUSD = (line.amount || 0) / 100
+
+    if (participantEmail && amountUSD > 0) {
+      await incrementParticipantBalance(participantEmail, amountUSD)
+    }
   }
 }
 
-async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  try {
-    console.log('Subscription deleted:', subscription.id)
-    
-    // Mark subscription as cancelled in Supabase
-    // await supabase
-    //   .from('users')
-    //   .update({
-    //     subscription_status: 'cancelled',
-    //     subscription_end_date: new Date().toISOString()
-    //   })
-    //   .eq('subscription_id', subscription.id)
-    
-  } catch (error) {
-    console.error('Error handling subscription deleted:', error)
+async function incrementParticipantBalance(email: string, amountUSD: number) {
+  if (!adminDb) {
+    console.warn(`Admin SDK not initialized. Could not update hoodVillageBalance for ${email}`)
+    return
   }
-}
 
-async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
+  const normalizedEmail = email.toLowerCase().trim()
   try {
-    console.log('Payment succeeded for invoice:', invoice.id)
-    
-    // Update subscription benefits or reset monthly allowances
-    // This could involve updating a benefits table or user profile
-    
-  } catch (error) {
-    console.error('Error handling payment succeeded:', error)
-  }
-}
+    const docRef = adminDb.collection('participantProfiles').doc(normalizedEmail)
+    await docRef.set({
+      email: normalizedEmail,
+      hoodVillageBalance: FieldValue.increment(amountUSD),
+      updatedAt: new Date().toISOString(),
+    }, { merge: true })
 
-async function handlePaymentFailed(invoice: Stripe.Invoice) {
-  try {
-    console.log('Payment failed for invoice:', invoice.id)
-    
-    // Handle failed payment - maybe send email notification
-    // or update subscription status to 'past_due'
-    
+    console.log(`Successfully incremented hoodVillageBalance by $${amountUSD} for participant: ${normalizedEmail}`)
   } catch (error) {
-    console.error('Error handling payment failed:', error)
+    console.error(`Failed updating hoodVillageBalance for ${normalizedEmail}:`, error)
   }
 }
