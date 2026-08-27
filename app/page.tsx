@@ -268,21 +268,27 @@ export default function HomePage() {
     return () => clearInterval(blurInterval)
   }, [])
 
+  const [pills, setPills] = useState<any[]>([])
+
   useEffect(() => {
-    async function loadSiteMedia() {
+    async function loadSiteData() {
       try {
-        const res = await fetch('/api/admin/media')
-        if (res.ok) {
-          const data = await res.json()
-          if (data.backgroundUrl) {
-            setBgImageUrl(data.backgroundUrl)
-          }
+        const mediaRes = await fetch('/api/admin/media')
+        if (mediaRes.ok) {
+          const data = await mediaRes.json()
+          if (data.backgroundUrl) setBgImageUrl(data.backgroundUrl)
+        }
+
+        const pillsRes = await fetch('/api/admin/pills')
+        if (pillsRes.ok) {
+          const pillsData = await pillsRes.json()
+          if (pillsData.pills) setPills(pillsData.pills)
         }
       } catch (err) {
-        console.warn('Failed fetching custom site background:', err)
+        console.warn('Failed fetching site config:', err)
       }
     }
-    loadSiteMedia()
+    loadSiteData()
   }, [])
 
   return (
@@ -402,12 +408,81 @@ export default function HomePage() {
         </div>
       </motion.header>
 
-      {/* Main Content - Clean slate for new design */}
-      <main className={`relative z-20 h-full flex flex-col justify-center items-end px-4 sm:px-8 lg:px-20 transition-all duration-1000 ${isBlurred ? 'blur-sm' : ''}`}>
-        {/* Content area ready for new design */}
+      {/* Main Content */}
+      <main className={`relative z-20 h-full flex flex-col lg:flex-row justify-between items-end px-4 sm:px-8 lg:px-20 pt-24 pb-12 transition-all duration-1000 ${isBlurred ? 'blur-sm' : ''}`}>
         
-        {/* FAQ Dropdown Section - Right-aligned and smaller */}
-        <div className="w-full max-w-md ml-auto mt-20">
+        {/* Left / Bottom Area: Dynamic Pills & Featured Participant Links */}
+        <div className="w-full max-w-xl space-y-6 mb-8 lg:mb-0 text-left">
+          
+          {/* Dynamic Pills Row with Framer Motion structure */}
+          {pills.length > 0 && (
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-900 bg-white/90 border border-gray-300 px-3 py-1 rounded-full shadow-sm">
+                Community Initiatives & Categories
+              </span>
+              
+              <div className="flex flex-wrap gap-2 pt-1">
+                {pills.filter(p => p.active !== false).map((pill, idx) => (
+                  <motion.div
+                    key={pill.id || idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileHover={{ scale: 1.05, y: -3 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ 
+                      type: 'spring', 
+                      stiffness: 400, 
+                      damping: 15,
+                      delay: idx * 0.05 
+                    }}
+                    onClick={() => router.push(pill.linkUrl || '/community')}
+                    className="cursor-pointer bg-white/95 backdrop-blur-md border border-gray-200 hover:border-emerald-500 text-gray-900 px-3.5 py-2 rounded-2xl shadow-md hover:shadow-lg flex items-center space-x-2 transition-all text-xs font-semibold"
+                  >
+                    <span>{pill.icon || '✨'}</span>
+                    <span>{pill.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Featured Direct Participant Link Card */}
+          <div className="bg-slate-950/90 text-white border border-slate-800 rounded-3xl p-6 shadow-2xl backdrop-blur-md">
+            <div className="flex items-start justify-between mb-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950 border border-emerald-800 px-2.5 py-0.5 rounded-full">
+                Featured Participant Profile
+              </span>
+              <span className="text-xs font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-md">$3,850 USD</span>
+            </div>
+
+            <h3 className="text-xl font-black text-white">Ezra Haugabrooks</h3>
+            <p className="text-xs text-slate-300 font-medium">BEAM Ecosystem Steward & Senior Fellow</p>
+            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+              Coordinating patron village backing, Steinway recording stipends, and open-source software/hardware projects across all BEAM divisions.
+            </p>
+
+            <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-800/80">
+              <button
+                onClick={() => router.push('/participant/ezra.haugabrooks%40gmail.com')}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition-all shadow-md"
+              >
+                <span>View Full Profile & Back</span>
+                <span>→</span>
+              </button>
+
+              <button
+                onClick={() => router.push('/community')}
+                className="text-xs text-slate-400 hover:text-white underline font-medium"
+              >
+                Browse All Community Members
+              </button>
+            </div>
+          </div>
+
+        </div>
+        
+        {/* FAQ Dropdown Section - Right-aligned */}
+        <div className="w-full max-w-md ml-auto">
           {/* FAQ Header Button */}
           <div className="flex justify-end mb-6">
             <div className="bg-black text-white font-semibold py-2 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 text-sm" style={{
@@ -470,7 +545,7 @@ export default function HomePage() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             <div className="text-center mb-8">
               <button

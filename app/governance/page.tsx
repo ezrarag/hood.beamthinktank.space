@@ -149,7 +149,7 @@ export default function GovernancePage() {
                 }}
               />
               <button
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
                   const cityInput = e.currentTarget.previousElementSibling as HTMLInputElement
                   const cityName = cityInput.value.trim()
                   if (cityName) {

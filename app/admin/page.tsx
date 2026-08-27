@@ -18,7 +18,9 @@ import {
   RefreshCw,
   Search,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Tag,
+  Trash2
 } from 'lucide-react'
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
 import { db, ParticipantProfile } from '@/lib/firebase'
@@ -41,13 +43,22 @@ const PRESET_IMAGES = [
 
 export default function HoodAdminPortal() {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'media' | 'community' | 'interop'>('media')
+  const [activeTab, setActiveTab] = useState<'media' | 'community' | 'pills' | 'interop'>('media')
 
   // Media Tab State
   const [currentBgUrl, setCurrentBgUrl] = useState<string>('')
   const [customBgInput, setCustomBgInput] = useState<string>('')
   const [isUpdatingMedia, setIsUpdatingMedia] = useState<boolean>(false)
   const [mediaSuccessMsg, setMediaSuccessMsg] = useState<string>('')
+
+  // Pills Tab State
+  const [pillsList, setPillsList] = useState<any[]>([])
+  const [newPillLabel, setNewPillLabel] = useState<string>('')
+  const [newPillIcon, setNewPillIcon] = useState<string>('✨')
+  const [newPillCategory, setNewPillCategory] = useState<string>('Orchestra')
+  const [newPillLink, setNewPillLink] = useState<string>('/community')
+  const [isSavingPills, setIsSavingPills] = useState<boolean>(false)
+  const [pillsSuccessMsg, setPillsSuccessMsg] = useState<string>('')
 
   // Community Tab State
   const [participants, setParticipants] = useState<ParticipantProfile[]>([])
@@ -77,6 +88,7 @@ export default function HoodAdminPortal() {
   // Load Active Site Config & Roster on Mount
   useEffect(() => {
     fetchMediaConfig()
+    fetchPillsConfig()
     fetchCommunityRoster()
   }, [])
 
@@ -92,6 +104,20 @@ export default function HoodAdminPortal() {
       }
     } catch (err) {
       console.error('Failed loading site media config:', err)
+    }
+  }
+
+  const fetchPillsConfig = async () => {
+    try {
+      const res = await fetch('/api/admin/pills')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.pills) {
+          setPillsList(data.pills)
+        }
+      }
+    } catch (err) {
+      console.error('Failed loading pills config:', err)
     }
   }
 
@@ -116,23 +142,6 @@ export default function HoodAdminPortal() {
     setIsLoadingParticipants(false)
   }
 
-  const handleSeedRosterToFirestore = async () => {
-    if (!db) return
-    setIsLoadingParticipants(true)
-    try {
-      for (const item of CROSS_DIVISION_ROSTER) {
-        const normalizedEmail = item.email.toLowerCase().trim()
-        await setDoc(doc(db, 'participantProfiles', normalizedEmail), item, { merge: true })
-      }
-      await fetchCommunityRoster()
-      alert('Successfully seeded cross-division roster to Cloud Firestore!')
-    } catch (err) {
-      console.error('Error seeding roster to Firestore:', err)
-    } finally {
-      setIsLoadingParticipants(false)
-    }
-  }
-
   const handleUpdateBackground = async (newUrl: string) => {
     setIsUpdatingMedia(true)
     setMediaSuccessMsg('')
@@ -154,6 +163,53 @@ export default function HoodAdminPortal() {
     } finally {
       setIsUpdatingMedia(false)
     }
+  }
+
+  const handleSavePills = async (updatedPills: any[]) => {
+    setIsSavingPills(true)
+    setPillsSuccessMsg('')
+
+    try {
+      const res = await fetch('/api/admin/pills', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pills: updatedPills }),
+      })
+
+      if (res.ok) {
+        setPillsList(updatedPills)
+        setPillsSuccessMsg('Homepage pills successfully saved!')
+      }
+    } catch (err) {
+      console.error('Failed saving pills:', err)
+    } finally {
+      setIsSavingPills(false)
+    }
+  }
+
+  const handleAddPill = () => {
+    if (!newPillLabel.trim()) return
+    const newPill = {
+      id: Date.now().toString(),
+      label: newPillLabel.trim(),
+      icon: newPillIcon.trim() || '✨',
+      category: newPillCategory,
+      linkUrl: newPillLink.trim() || '/community',
+      active: true
+    }
+    const updated = [...pillsList, newPill]
+    handleSavePills(updated)
+    setNewPillLabel('')
+  }
+
+  const handleTogglePill = (id: string) => {
+    const updated = pillsList.map(p => p.id === id ? { ...p, active: !p.active } : p)
+    handleSavePills(updated)
+  }
+
+  const handleDeletePill = (id: string) => {
+    const updated = pillsList.filter(p => p.id !== id)
+    handleSavePills(updated)
   }
 
   const handleOpenEditModal = (participant?: ParticipantProfile) => {
@@ -247,22 +303,34 @@ export default function HoodAdminPortal() {
 
       {/* Main Tabs Navigation */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-6">
-        <div className="flex border-b border-slate-800 space-x-8">
+        <div className="flex border-b border-slate-800 space-x-8 overflow-x-auto">
           <button
             onClick={() => setActiveTab('media')}
-            className={`pb-4 text-sm font-bold flex items-center space-x-2 transition-all border-b-2 ${
+            className={`pb-4 text-sm font-bold flex items-center space-x-2 transition-all border-b-2 whitespace-nowrap ${
               activeTab === 'media'
                 ? 'border-emerald-500 text-emerald-400'
                 : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
             <ImageIcon className="w-4 h-4" />
-            <span>Frontend Media & Visuals</span>
+            <span>Frontend Media</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('pills')}
+            className={`pb-4 text-sm font-bold flex items-center space-x-2 transition-all border-b-2 whitespace-nowrap ${
+              activeTab === 'pills'
+                ? 'border-emerald-500 text-emerald-400'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <Tag className="w-4 h-4" />
+            <span>Homepage Pills & Categories</span>
           </button>
 
           <button
             onClick={() => setActiveTab('community')}
-            className={`pb-4 text-sm font-bold flex items-center space-x-2 transition-all border-b-2 ${
+            className={`pb-4 text-sm font-bold flex items-center space-x-2 transition-all border-b-2 whitespace-nowrap ${
               activeTab === 'community'
                 ? 'border-emerald-500 text-emerald-400'
                 : 'border-transparent text-slate-400 hover:text-white'
@@ -274,7 +342,7 @@ export default function HoodAdminPortal() {
 
           <button
             onClick={() => setActiveTab('interop')}
-            className={`pb-4 text-sm font-bold flex items-center space-x-2 transition-all border-b-2 ${
+            className={`pb-4 text-sm font-bold flex items-center space-x-2 transition-all border-b-2 whitespace-nowrap ${
               activeTab === 'interop'
                 ? 'border-emerald-500 text-emerald-400'
                 : 'border-transparent text-slate-400 hover:text-white'
@@ -371,7 +439,97 @@ export default function HoodAdminPortal() {
           </div>
         )}
 
-        {/* TAB 2: COMMUNITY & PARTICIPANT ROSTER */}
+        {/* TAB: HOMEPAGE PILLS MANAGER */}
+        {activeTab === 'pills' && (
+          <div className="pt-8 space-y-8">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-white">Homepage Pills & Categories Manager</h2>
+                  <p className="text-xs text-slate-400">Add, edit, or toggle interactive category pills rendered on the landing page.</p>
+                </div>
+                {pillsSuccessMsg && (
+                  <span className="text-xs text-emerald-400 font-bold bg-emerald-950 border border-emerald-800 px-3 py-1 rounded-full flex items-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> {pillsSuccessMsg}
+                  </span>
+                )}
+              </div>
+
+              {/* Add New Pill Input */}
+              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 mb-8 space-y-4">
+                <h4 className="text-xs font-bold text-slate-300">Add New Category Pill</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Pill Label (e.g. Steinway Stipends)"
+                    value={newPillLabel}
+                    onChange={(e) => setNewPillLabel(e.target.value)}
+                    className="px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Icon Emoji (e.g. 🎻)"
+                    value={newPillIcon}
+                    onChange={(e) => setNewPillIcon(e.target.value)}
+                    className="px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Link URL (e.g. /community?division=orchestra)"
+                    value={newPillLink}
+                    onChange={(e) => setNewPillLink(e.target.value)}
+                    className="px-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500 font-mono"
+                  />
+                  <button
+                    onClick={handleAddPill}
+                    disabled={isSavingPills}
+                    className="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center space-x-1.5"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add & Save Pill</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Active Pills List */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Homepage Pills ({pillsList.length})</h4>
+                {pillsList.map((pill) => (
+                  <div key={pill.id} className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-xl">{pill.icon}</span>
+                      <div>
+                        <h5 className="text-xs font-bold text-white">{pill.label}</h5>
+                        <p className="text-[10px] text-slate-500 font-mono">{pill.linkUrl}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => handleTogglePill(pill.id)}
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold border ${
+                          pill.active !== false
+                            ? 'bg-emerald-950 text-emerald-400 border-emerald-800'
+                            : 'bg-slate-900 text-slate-500 border-slate-800'
+                        }`}
+                      >
+                        {pill.active !== false ? 'Active' : 'Disabled'}
+                      </button>
+                      <button
+                        onClick={() => handleDeletePill(pill.id)}
+                        className="text-slate-500 hover:text-rose-400 p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: COMMUNITY & PARTICIPANT ROSTER */}
         {activeTab === 'community' && (
           <div className="pt-8 space-y-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -459,7 +617,7 @@ export default function HoodAdminPortal() {
           </div>
         )}
 
-        {/* TAB 3: CROSS-SITE INTEROPERABILITY */}
+        {/* TAB 4: CROSS-SITE INTEROPERABILITY */}
         {activeTab === 'interop' && (
           <div className="pt-8 space-y-8">
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8">

@@ -58,7 +58,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess }: LoginModalPro
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="text-center mb-6">
