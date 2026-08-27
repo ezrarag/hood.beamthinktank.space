@@ -7,11 +7,12 @@ import LoginModal from '@/components/auth/LoginModal'
 import OnboardingModal from '@/components/auth/OnboardingModal'
 
 // FAQ Item Component
-const FAQItem = ({ question, answer, isOpen, onToggle }: { 
+const FAQItem = ({ question, answer, isOpen, onToggle, children }: { 
   question: string; 
-  answer: string; 
+  answer?: string; 
   isOpen: boolean;
   onToggle: () => void;
+  children?: React.ReactNode;
 }) => {
   return (
     <motion.div 
@@ -54,9 +55,11 @@ const FAQItem = ({ question, answer, isOpen, onToggle }: {
             className="overflow-hidden"
           >
             <div className="px-4 pb-4">
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {answer}
-              </p>
+              {children ? children : (
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {answer}
+                </p>
+              )}
             </div>
           </motion.div>
         )}
@@ -446,54 +449,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Featured Direct Participant Link Card */}
-          <div className="bg-slate-950/90 text-white border border-slate-800 rounded-3xl p-6 shadow-2xl backdrop-blur-md">
-            <div className="flex items-start justify-between mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950 border border-emerald-800 px-2.5 py-0.5 rounded-full">
-                Featured Participant Profile
-              </span>
-              <span className="text-xs font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-md">$3,850 USD</span>
-            </div>
-
-            <h3 className="text-xl font-black text-white">Ezra Haugabrooks</h3>
-            <p className="text-xs text-slate-300 font-medium">BEAM Ecosystem Steward & Senior Fellow</p>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-              Coordinating patron village backing, Steinway recording stipends, and open-source software/hardware projects across all BEAM divisions.
-            </p>
-
-            <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-800/80">
-              <button
-                onClick={() => router.push('/participant/ezra.haugabrooks%40gmail.com')}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition-all shadow-md"
-              >
-                <span>View Full Profile & Back</span>
-                <span>→</span>
-              </button>
-
-              <button
-                onClick={() => router.push('/community')}
-                className="text-xs text-slate-400 hover:text-white underline font-medium"
-              >
-                Browse All Community Members
-              </button>
-            </div>
-          </div>
-
-        </div>
-        
-        {/* FAQ Dropdown Section - Right-aligned */}
-        <div className="w-full max-w-md ml-auto">
-          {/* FAQ Header Button */}
-          <div className="flex justify-end mb-6">
-            <div className="bg-black text-white font-semibold py-2 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 text-sm" style={{
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)',
-              transform: 'translateY(0)',
-              transition: 'all 0.2s ease'
-            }}>
-              <span>I'm here to help you</span>
-            </div>
-          </div>
-          
           {/* FAQ Cards - Smaller and right-aligned */}
           <div className="space-y-3">
             <FAQItem 
@@ -508,6 +463,45 @@ export default function HomePage() {
               isOpen={openFAQIndex === 1}
               onToggle={() => setOpenFAQIndex(openFAQIndex === 1 ? null : 1)}
             />
+            <FAQItem 
+              question="Support community fellows & view participant profiles"
+              isOpen={openFAQIndex === 4}
+              onToggle={() => setOpenFAQIndex(openFAQIndex === 4 ? null : 4)}
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    Featured Profile
+                  </span>
+                  <span className="text-xs font-mono font-bold text-emerald-600">$3,850 USD</span>
+                </div>
+                <h4 className="text-base font-bold text-gray-900">Ezra Haugabrooks</h4>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  BEAM Ecosystem Steward & Senior Fellow. Coordinating patron village backing, Steinway recording stipends, and open-source software/hardware projects across all BEAM divisions.
+                </p>
+                <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                  <button
+                    onClick={(e: React.MouseEvent) => {
+                      e.stopPropagation()
+                      router.push('/participant/ezra.haugabrooks%40gmail.com')
+                    }}
+                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-1 transition-all"
+                  >
+                    <span>View Profile & Back Ezra</span>
+                    <span>→</span>
+                  </button>
+                  <button
+                    onClick={(e: React.MouseEvent) => {
+                      e.stopPropagation()
+                      router.push('/community')
+                    }}
+                    className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-xl text-xs transition-all"
+                  >
+                    Community Hub
+                  </button>
+                </div>
+              </div>
+            </FAQItem>
             <FAQItem 
               question="What do I get with a Community Subscription?"
               answer="As a subscriber, you unlock a full package of benefits for $75/month. This includes 1 domestic round-trip flight, 6 hotel nights, 1 meal per day, 6 Uber rides, and a monthly health exam. These perks are designed to support your lifestyle while contributing to your neighborhood's growth."

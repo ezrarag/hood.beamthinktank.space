@@ -117,15 +117,8 @@ export default function CommunityDirectoryPage() {
               Authenticate with your Google account to manage your patron subscriptions, track your village backing allocations, and interact with community fellows and institutional cohorts.
             </p>
 
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="pt-4 flex items-center justify-center">
               <GoogleAuthButton onUserChanged={(profile) => setUserProfile(profile)} />
-              
-              <button
-                onClick={() => setActiveTab('directory')}
-                className="text-xs text-slate-400 hover:text-white underline font-semibold py-2 px-4"
-              >
-                Browse Public Roster Preview ↓
-              </button>
             </div>
           </div>
         </div>
@@ -229,8 +222,8 @@ export default function CommunityDirectoryPage() {
         </div>
       )}
 
-      {/* DIRECTORY TAB: BROWSE ROSTER & DIVISIONS */}
-      {(activeTab === 'directory' || !userProfile) && (
+      {/* DIRECTORY TAB: BROWSE ROSTER & DIVISIONS (Only accessible when user is logged in) */}
+      {userProfile && activeTab === 'directory' && (
         <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-10">
           
           {/* Entity Type Toggle (All vs Individuals vs Cohorts) */}
