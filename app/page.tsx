@@ -338,29 +338,11 @@ export default function HomePage() {
               </h1>
             </div>
 
-            {/* Navigation Links */}
+            {/* Navigation Links - Only Community Hub and Admin on right */}
             <div className="flex items-center flex-wrap gap-3 sm:gap-6 text-sm font-light text-gray-900">
-              {userCity ? (
-                <button 
-                  onClick={() => router.push(`/${createCitySlug(userCity)}`)} 
-                  className="hover:text-blue-600 transition-colors cursor-pointer py-1"
-                  style={{ fontFamily: 'sans-serif' }}
-                >
-                  {userCity}
-                </button>
-              ) : (
-                <button 
-                  onClick={handleEnableLocation} 
-                  className="text-blue-600 hover:text-blue-800 underline cursor-pointer py-1"
-                  style={{ fontFamily: 'sans-serif' }}
-                >
-                  Enable Location
-                </button>
-              )}
-              
               <button 
                 onClick={() => router.push('/community')}
-                className="font-semibold text-emerald-700 hover:text-emerald-900 transition-colors cursor-pointer bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200"
+                className="font-semibold text-emerald-700 hover:text-emerald-900 transition-colors cursor-pointer bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200"
                 style={{ fontFamily: 'sans-serif' }}
               >
                 Community Hub
@@ -368,42 +350,10 @@ export default function HomePage() {
 
               <button 
                 onClick={() => router.push('/admin')}
-                className="font-semibold text-slate-800 hover:text-emerald-600 transition-colors cursor-pointer bg-slate-100 px-3 py-1 rounded-full border border-slate-300"
+                className="font-semibold text-slate-800 hover:text-emerald-600 transition-colors cursor-pointer bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-300"
                 style={{ fontFamily: 'sans-serif' }}
               >
                 Admin
-              </button>
-
-              <button 
-                onClick={() => router.push('/governance')}
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
-                style={{ fontFamily: 'sans-serif' }}
-              >
-                About
-              </button>
-              
-              <button 
-                onClick={() => router.push('/contact')}
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
-                style={{ fontFamily: 'sans-serif' }}
-              >
-                Contact
-              </button>
-
-              <button 
-                onClick={() => setShowSubscriptionModal(true)}
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
-                style={{ fontFamily: 'sans-serif' }}
-              >
-                Subscribe
-              </button>
-
-              <button 
-                onClick={() => setShowLoginModal(true)}
-                className="hover:text-blue-600 transition-colors cursor-pointer py-1"
-                style={{ fontFamily: 'sans-serif' }}
-              >
-                Login
               </button>
             </div>
 
@@ -411,13 +361,12 @@ export default function HomePage() {
         </div>
       </motion.header>
 
-      {/* Main Content */}
+      {/* Main Content - Commented out for now */}
+      {/*
       <main className={`relative z-20 h-full flex flex-col lg:flex-row justify-between items-end px-4 sm:px-8 lg:px-20 pt-24 pb-12 transition-all duration-1000 ${isBlurred ? 'blur-sm' : ''}`}>
         
-        {/* Left / Bottom Area: Dynamic Pills & Featured Participant Links */}
         <div className="w-full max-w-xl space-y-6 mb-8 lg:mb-0 text-left">
           
-          {/* Dynamic Pills Row with Framer Motion structure */}
           {pills.length > 0 && (
             <div className="space-y-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-900 bg-white/90 border border-gray-300 px-3 py-1 rounded-full shadow-sm">
@@ -449,7 +398,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* FAQ Cards - Smaller and right-aligned */}
           <div className="space-y-3">
             <FAQItem 
               question="Book a neighborhood cleaning service"
@@ -517,6 +465,7 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+      */}
 
       {/* Login Modal */}
       <LoginModal
