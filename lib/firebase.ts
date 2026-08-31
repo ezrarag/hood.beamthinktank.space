@@ -39,6 +39,9 @@ export interface ParticipantProfile {
   email: string
   primaryRole: string
   division?: 'orchestra' | 'forge' | 'law' | 'grounds' | 'dance' | 'education' | 'transportation' | 'business'
+  // Which BEAM_DIVISIONS (see lib/divisions.ts) this participant is actively part of —
+  // drives the "Reach across BEAM" badges on the public participant page.
+  activeDivisions?: string[]
   entityType?: 'individual' | 'cohort'
   cohortName?: string
   skillsOrTags?: string[]

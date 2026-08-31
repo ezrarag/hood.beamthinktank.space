@@ -1,7 +1,7 @@
 import { ParticipantProfile } from './firebase'
 
 export interface DivisionInfo {
-  id: 'orchestra' | 'forge' | 'law' | 'grounds' | 'dance' | 'education' | 'transportation' | 'business'
+  id: 'orchestra' | 'forge' | 'law' | 'grounds' | 'dance' | 'education' | 'transportation' | 'business' | 'architecture'
   name: string
   icon: string
   color: string
@@ -73,6 +73,14 @@ export const BEAM_DIVISIONS: DivisionInfo[] = [
     color: 'indigo',
     description: 'Micro-enterprise development and local business accelerators.',
     subdomain: 'business.beamthinktank.space'
+  },
+  {
+    id: 'architecture',
+    name: 'BEAM Architecture',
+    icon: '📐',
+    color: 'orange',
+    description: 'Structural and redevelopment design work across BEAM sites.',
+    subdomain: 'grounds.beamthinktank.space'
   }
 ]
 
@@ -90,6 +98,7 @@ export const CROSS_DIVISION_ROSTER: ParticipantProfile[] = [
     hoodVillageBalance: 3850,
     bio: 'BEAM Platform Fellow & Systems Lead. Coordinating patron village backing, Steinway recording stipends, and open-source software/hardware projects across all BEAM divisions.',
     skillsOrTags: ['Steinway Fellow', 'BDSO Violin', 'BEAM Steward', 'Full-Stack Software'],
+    activeDivisions: ['orchestra', 'forge', 'architecture'],
     hoodAllocations: {
       travelPercent: 40,
       housingPercent: 35,

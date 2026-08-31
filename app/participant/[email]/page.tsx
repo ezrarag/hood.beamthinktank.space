@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { doc, getDoc } from 'firebase/firestore'
 import { db, ParticipantProfile } from '@/lib/firebase'
+import { CROSS_DIVISION_ROSTER, BEAM_DIVISIONS } from '@/lib/divisions'
 import { loadStripe } from '@stripe/stripe-js'
 import { 
   Heart, 
@@ -73,6 +74,16 @@ export default function ParticipantProfilePage() {
         }
       } catch (err) {
         console.warn('Firestore fetch error, falling back to mock profile:', err)
+      }
+
+      // Known participant? Use hood's own cross-division roster before the generic fallback.
+      const rosterMatch = CROSS_DIVISION_ROSTER.find(
+        (candidate) => candidate.email.toLowerCase() === participantEmail
+      )
+      if (rosterMatch) {
+        setProfile(rosterMatch)
+        setIsLoading(false)
+        return
       }
 
       // Fallback demo profile if Firestore doc doesn't exist yet
@@ -229,6 +240,33 @@ export default function ParticipantProfilePage() {
                   )}
                 </div>
               </div>
+
+              {profile.activeDivisions && profile.activeDivisions.length > 0 && (
+                <div className="mt-6 border-t border-slate-800/80 pt-4">
+                  <p className="text-xs uppercase tracking-wider text-slate-500 mb-2.5">
+                    Reach across BEAM &mdash; active in {profile.activeDivisions.length} division
+                    {profile.activeDivisions.length === 1 ? '' : 's'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.activeDivisions.map((divisionId) => {
+                      const division = BEAM_DIVISIONS.find((candidate) => candidate.id === divisionId)
+                      if (!division) return null
+                      return (
+                        <a
+                          key={division.id}
+                          href={`https://${division.subdomain}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-200 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-full transition-colors"
+                        >
+                          <span>{division.icon}</span>
+                          {division.name}
+                        </a>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
 
               {profile.bio && (
                 <p className="mt-6 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
